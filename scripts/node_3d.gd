@@ -17,11 +17,7 @@ func _ready() -> void:
 	global.WAIT_Area1_Label = $Scene3D/Desk/WaitArea1
 	global.WAIT_Area2_Label = $Scene3D/Desk/WaitArea2
 	global.camera = $LPlayer/SpringArm3D/Camera3D
-	global.RoundEnd_Panel = $CanvasLayer/RoundEnd_Panel
 	global.discardPile = $Scene3D/Desk/discardPile
-	global.Tame_Panel = $CanvasLayer/Tame_Panel
-	global.Combo_Panel = $CanvasLayer/Combo_Panel
-	global.Card_Info_Panel = $CanvasLayer/CardInfoPanel
 	global.Cards_Number_Label = $Scene3D/Desk/HeldArea1/CardsNumber
 	global.Showing_Area_Label = $Scene3D/Desk/ShowArea
 	global.HELD_Area1_Label = $Scene3D/Desk/HeldArea1
@@ -58,18 +54,16 @@ func _process(delta: float) -> void:
 	global.Cards_Number_Label.text = "(" + str(hand_size) + "/" + str(HAND_CARDS_MAX) + ")"
 	match global.current_state:
 		global.GameState.DEALING:
-			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				global.spring_length_animation.set_target(1,200)
-				global.spring_length_animation.play(true)
-				
-			for player in global.players:
-				player.can_combo = true
-			global.round = global.game_progress - 1;
-			global.Tame_Panel.visible = false
-			if global.selectGroup.size() >= global.players.size() * 2:
-				if !global.selectGroup.back().move_ability:
-					global.current_state = global.GameState.SELECTING
-			else:
+			#if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
+				#global.spring_length_animation.set_target(1,200)
+				#global.spring_length_animation.play(true)
+				#
+			#for player in global.players:
+				#player.can_combo = true
+			#global.round = global.game_progress - 1;
+			#if global.selectGroup.size() >= global.players.size() * 2:
+				#global.current_state = global.GameState.SELECTING
+			#else:
 				if tick % DEAL_INTERVAL == 0:
 					# 优化：使用缓存的节点引用
 					var cards_count = _cached_cards_node.get_child_count()
@@ -79,7 +73,6 @@ func _process(delta: float) -> void:
 						initialize_card(source_sprite)
 				
 		global.GameState.SELECTING:
-			global.Tame_Panel.visible = false
 			if global.selectGroup.size() == 0:
 				global.current_state = global.GameState.WAITING
 			# 优化：使用辅助函数更新玩家活跃状态
@@ -90,8 +83,6 @@ func _process(delta: float) -> void:
 			if rot_animation.done && rot_animation.end_value == 90:
 				global.current_state = global.GameState.COMBOING
 			global.round = global.game_progress - 1;
-			# 优化：简化条件判断
-			global.Tame_Panel.visible = (global.selectedCard != null)
 			# 优化：使用更高效的方式计算总大小
 			var total_waiting_size: int = 0;
 			for player in global.players:
@@ -120,9 +111,8 @@ func _process(delta: float) -> void:
 			_update_player_activity()
 			for player in global.players:
 				player.process()
-			global.Combo_Panel.visible = true
 		global.GameState.END:
-			global.RoundEnd_Panel.visible = true
+
 			if global.round > global.players.size() - 1:
 				if rot_animation.end_value != 0:
 					global.spring_length_animation.set_target(3,200)
@@ -135,7 +125,6 @@ func _process(delta: float) -> void:
 			if rot_animation.done && rot_animation.end_value == 0:
 				global.spring_rotX_animation.set_target(45,200)
 				global.spring_rotX_animation.play(true)
-				global.RoundEnd_Panel.visible = false
 				global.player_activity = null
 				global.game_progress += 1
 				global.current_state = global.GameState.DEALING
@@ -145,8 +134,7 @@ func _process(delta: float) -> void:
 	
 func initialize_card(sprite: Sprite3D) -> void:
 	# 优化：缓存路径替换结果
-	var script_path = sprite.texture.resource_path.replace("res://textrue/cards/", "res://scrpcts/status/").replace(".png", ".gd")
-	sprite.set_script(load(script_path))
+	sprite.set_script(load("res://scripts/card/card_base.gd"))
 	global.selectGroup.push_back(sprite)
 	var last_card = global.selectGroup.back()
 	if last_card.get_parent() == null:

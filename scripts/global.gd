@@ -11,10 +11,6 @@ static var game_progress: int #游戏进度 n/10
 static var DetailedCard: Card_Base #详细介绍的卡牌(用于 card_info_panel.gd)
 static var current_state: global.GameState # 默认初始状态为发牌
 static var selectedCard: Card_Base #选择的卡牌
-static var Tame_Panel :Panel #捕猎/售卖 卡牌面板
-static var RoundEnd_Panel :Panel #回合末结束面板
-static var Combo_Panel :Panel #回合 卡牌面板
-static var Card_Info_Panel :Panel #卡牌信息面板
 static var Cards_Number_Label :Label3D #卡牌信息面板
 static var Showing_Area_Label :Label3D #展示区域字体
 static var WAIT_Area1_Label :Label3D #区域字体
