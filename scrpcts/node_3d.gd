@@ -105,7 +105,7 @@ func _process(delta: float) -> void:
 				global.spring_rotX_animation.play(true)
 				rot_animation.set_target(90,500)
 				rot_animation.play(true)
-			global.Cube_Desk.rotation.z = deg_to_rad(rot_animation.value)
+			global.Cube_Desk.global_rotation.z = deg_to_rad(rot_animation.value)
 		global.GameState.COMBOING:
 			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
 				global.spring_length_animation.set_target(1,200)
@@ -131,7 +131,7 @@ func _process(delta: float) -> void:
 					rot_animation.play(true)
 			else:
 				global.player_activity = global.players.get(global.round)
-			global.Cube_Desk.rotation.z = deg_to_rad(rot_animation.value)
+			global.Cube_Desk.global_rotation.z = deg_to_rad(rot_animation.value)
 			if rot_animation.done && rot_animation.end_value == 0:
 				global.spring_rotX_animation.set_target(45,200)
 				global.spring_rotX_animation.play(true)
@@ -139,7 +139,7 @@ func _process(delta: float) -> void:
 				global.player_activity = null
 				global.game_progress += 1
 				global.current_state = global.GameState.DEALING
-				global.Cube_Desk.rotation.z = 0
+				global.Cube_Desk.global_rotation.z = 0
 	tick+=1
 	pass
 	

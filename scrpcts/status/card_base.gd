@@ -142,9 +142,9 @@ func _process(delta: float) -> void:
 				if player != null:
 					# 根据卡牌在等待组中的索引计算目标X坐标
 					if player.team_id == global.local_player.team_id:
-						target_pos = global.WAIT_Area1_Label.global_position
+						target_pos = global.WAIT_Area1_Label.position
 					else:
-						target_pos = global.WAIT_Area2_Label.global_position
+						target_pos = global.WAIT_Area2_Label.position
 					var idx = player.waitingGroup.find(self)
 					target_pos.x += 0.5 + idx * 0.3
 					# 应用3D移动和旋转动画
@@ -291,7 +291,6 @@ func _input(event: InputEvent) -> void:
 					if is_entered && global.current_state == global.GameState.COMBOING:
 						# 只能选中自己队伍的卡牌
 						if global.player_activity.team_id == team_id:
-							start_pos = global_position
 							var pos = target_pos
 							pos.x = start_pos.x + Y_OFFSET_SELECTED
 							_select_card(pos,Vector3(0.01,0,0))
@@ -375,7 +374,7 @@ func _update_movement_progress(delta: float) -> float:
 # 完成Y轴移动（优化：提取重复的Y轴移动完成逻辑）
 # 完成Y轴浮动动画后，交换起始和目标位置，实现来回浮动的效果
 func _finalize_y_movement() -> void:
-	global_position = target_pos
+	position = target_pos
 	# 交换起始和目标位置，使卡牌可以反向浮动
 	var temp: Vector3 = target_pos
 	target_pos = start_pos
@@ -418,7 +417,7 @@ func _select_card(target_pos_: Vector3,peak_height_: Vector3) -> void:
 # show_area: 是否显示碰撞检测区域
 func _init_base_state(duration: float, height: Vector3, show_area: bool = true) -> void:
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	move_duration = duration
 	peak_height = height
 	target_x_rotate = 0.0
@@ -435,12 +434,12 @@ func _init_dealing_state() -> void:
 	# 设置初始旋转角度（从背面旋转到正面）
 	start_rotation = Vector3(deg_to_rad(-270), deg_to_rad(180), 0.0)
 	rotation = start_rotation
-	start_pos = global.Deck.global_position
+	start_pos = global.Deck.position
 	move_duration = 0.8
 	peak_height = Vector3(0,0.5,0)
 	# 根据卡牌在选择组中的索引计算目标位置（水平排列）
 	var idx = global.selectGroup.find(self)
-	target_pos = Vector3(start_pos.x + 0.3 + idx * 0.3, global.Deck.global_position.y, global.Deck.global_position.z)
+	target_pos = Vector3(start_pos.x + 0.3 + idx * 0.3, global.Deck.position.y, global.Deck.position.z)
 	# 设置目标旋转角度（完成翻转）
 	target_x_rotate = 180.0
 	target_y_rotate = 180.0
@@ -500,9 +499,9 @@ func _init_discard_state() -> void:
 	# 恢复原始颜色
 	_set_color_animation(original_modulate)
 	# 设置目标位置为弃牌堆位置
-	target_pos = global.discardPile.global_position
+	target_pos = global.discardPile.position
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	move_ability = true
 	area.visible = false
 	elapsed_time = 0.0
@@ -535,14 +534,14 @@ func _init_to_held_state() -> void:
 			peak_height = Vector3(0.1,0.0,0)
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	# 根据队伍ID设置目标Z坐标（不同队伍的手牌在不同深度）
 	# TODO: 提取0.3, -0.3等魔法数字为常量
 	var held_pos: Vector3
 	if team_id == global.local_player.team_id:
-		held_pos = global.HELD_Area1_Label.global_position
+		held_pos = global.HELD_Area1_Label.position
 	else:
-		held_pos = global.HELD_Area2_Label.global_position
+		held_pos = global.HELD_Area2_Label.position
 	target_pos.x = held_pos.x
 	target_pos.z = held_pos.z
 	# 根据卡牌在手牌中的索引计算目标X坐标（手牌水平排列）
@@ -576,16 +575,16 @@ func _init_to_showing_state() -> void:
 		player.showing_cards.push_back(self)
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	move_duration = 0.1
 	peak_height = Vector3(0.25,0,0)
 	# 根据卡牌在手牌中的索引计算目标X/Z坐标（手牌水平排列）
 	var idx = player.showing_cards.find(self)
 	const limit: int = 7
 	var offsets_z: int = (idx / limit)
-	target_pos.z = global.Showing_Area_Label.global_position.z + (0.15 if team_id == 1 else -0.15) + offsets_z * (0.3 if team_id == 1 else -0.3)
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.005
-	target_pos.y = (global.Showing_Area_Label.global_position.y + 0.4) - (idx % limit - 1) * 0.2
+	target_pos.z = global.Showing_Area_Label.position.z + (0.15 if team_id == 1 else -0.15) + offsets_z * (0.3 if team_id == 1 else -0.3)
+	target_pos.x = global.Showing_Area_Label.position.x + 0.005
+	target_pos.y = (global.Showing_Area_Label.position.y + 0.4) - (idx % limit - 1) * 0.2
 	move_ability = true
 	elapsed_time = 0.0
 	
@@ -595,9 +594,9 @@ func _init_to_showing_state() -> void:
 func _init_showing_state() -> void:
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	move_duration = 0.1
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.005
+	target_pos.x = global.Showing_Area_Label.position.x + 0.005
 	peak_height = Vector3(0,0,0)
 	move_ability = true
 	elapsed_time = 0.0
@@ -607,9 +606,9 @@ func _init_showing_state() -> void:
 func _init_to_activate_state() -> void:
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
-	start_pos = global_position
+	start_pos = position
 	move_duration = 0.1
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.025
+	target_pos.x = global.Showing_Area_Label.position.x + 0.025
 	target_x_rotate = 0.0
 	target_y_rotate = 0.0
 	target_z_rotate = 0.0
@@ -629,19 +628,19 @@ func _apply_3d_movement(progress: float, update_x: bool = true, update_z: bool =
 		var linear_x = lerp(start_pos.x, target_pos.x, progress)
 		# X轴抛物线效果（使卡牌飞行时有弧线轨迹）
 		var parabola_x = PARABOLA_MULTIPLIER * peak_height.x * progress * (1 - progress)
-		global_position.x = linear_x + parabola_x
+		position.x = linear_x + parabola_x
 	if update_z:
 		# Z轴线性插值
 		var linear_z = lerp(start_pos.z, target_pos.z, progress)
 		# Z轴抛物线效果（使卡牌飞行时有弧线轨迹）
 		var parabola_z = PARABOLA_MULTIPLIER * peak_height.z * progress * (1 - progress)
-		global_position.z = linear_z + parabola_z
+		position.z = linear_z + parabola_z
 	if update_y:
 		# Y轴线性插值
 		var linear_y = lerp(start_pos.y, target_pos.y, progress)
 		# Y轴抛物线效果（使卡牌飞行时有弧线轨迹）
 		var parabola_y = PARABOLA_MULTIPLIER * peak_height.y * progress * (1 - progress)
-		global_position.y = linear_y + parabola_y
+		position.y = linear_y + parabola_y
 
 # 计算并应用3D旋转（优化：提取重复逻辑）
 # 根据进度值插值计算卡牌的旋转角度
@@ -662,7 +661,7 @@ func _apply_3d_rotation(progress: float) -> Vector3:
 # 动画完成后，将卡牌位置和旋转设置为目标值，确保精确对齐
 # target_rot: 目标旋转角度（由_apply_3d_rotation返回）
 func _finalize_movement(target_rot: Vector3) -> void:
-	global_position = target_pos
+	position = target_pos
 	rotation.x = target_rot.x
 	rotation.y = target_rot.y
 	rotation.z = target_rot.z
