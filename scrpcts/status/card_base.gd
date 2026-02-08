@@ -196,8 +196,8 @@ func _process(delta: float) -> void:
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
 				var progress = _update_movement_progress(delta)
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
+				_apply_3d_movement(progress, false, false, true)
 				# 动画完成后交换起始和目标位置，实现来回浮动
 				if progress >= 1.0:
 					_finalize_y_movement()
@@ -219,8 +219,8 @@ func _process(delta: float) -> void:
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
 				var progress = _update_movement_progress(delta)
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
+				_apply_3d_movement(progress, false, false, true)
 				# 动画完成后交换起始和目标位置，实现来回浮动
 				if progress >= 1.0:
 					_finalize_y_movement()
@@ -229,8 +229,8 @@ func _process(delta: float) -> void:
 		States.TO_ACTIVATE:
 			if move_ability:
 				var progress = _update_movement_progress(delta)
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
+				_apply_3d_movement(progress, false, false, true)
 				# 动画完成后交换起始和目标位置，实现来回浮动
 				if progress >= 1.0:
 					_finalize_y_movement()
@@ -293,7 +293,7 @@ func _input(event: InputEvent) -> void:
 						if global.player_activity.team_id == team_id:
 							start_pos = global_position
 							var pos = target_pos
-							pos.x = start_pos.x + Y_OFFSET_SELECTED
+							pos.y = start_pos.y + Y_OFFSET_SELECTED
 							_select_card(pos,Vector3(0.01,0,0))
 				# 可激活状态
 				States.TO_ACTIVATE:
@@ -375,11 +375,11 @@ func _update_movement_progress(delta: float) -> float:
 # 完成Y轴移动（优化：提取重复的Y轴移动完成逻辑）
 # 完成Y轴浮动动画后，交换起始和目标位置，实现来回浮动的效果
 func _finalize_y_movement() -> void:
-	global_position = target_pos
-	# 交换起始和目标位置，使卡牌可以反向浮动
-	var temp: Vector3 = target_pos
-	target_pos = start_pos
-	start_pos = temp
+	global_position.y = target_pos.y
+	# 仅交换Y轴起始/目标位置，使卡牌可以反向浮动
+	var temp_y: float = target_pos.y
+	target_pos.y = start_pos.y
+	start_pos.y = temp_y
 	move_ability = false
 
 # 选中卡牌处理（优化：提取重复的选中逻辑）
@@ -398,6 +398,7 @@ func _select_card(target_pos_: Vector3,peak_height_: Vector3) -> void:
 		global.selectedCard = self
 		#global.selectedCard.reparent(global.camera)
 		move_ability = true
+		start_pos = global_position
 		target_pos = target_pos_
 		elapsed_time = 0.0
 		peak_height = peak_height_
