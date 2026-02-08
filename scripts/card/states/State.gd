@@ -169,6 +169,20 @@ func _move_with_rotation(
 	card.target_rot = target_rot
 	move_rotate_enabled = true
 
+func _move_with_control_rotation(
+	target_pos: Vector3,
+	control_pos: Vector3,
+	target_rot: Vector3,
+	duration: float,
+	ease_weight: float = 1.0
+) -> void:
+	# 贝塞尔移动并插值旋转
+	# 用法：_move_with_control_rotation(target, control, Vector3(0, PI, 0), 0.6)
+	_move_with_control(target_pos, control_pos, duration, ease_weight)
+	card.start_rot = card.rotation
+	card.target_rot = target_rot
+	move_rotate_enabled = true
+
 func _move_with_scale(
 	target_pos: Vector3,
 	target_scale: Vector3,
