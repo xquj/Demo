@@ -108,9 +108,7 @@ func _update_state(delta: float) -> void:
 			if move_ability:
 				var player = _get_cached_player()
 				if player != null:
-					target_pos = global.WAIT_Area1_Label.global_position if player.team_id == global.local_player.team_id else global.WAIT_Area2_Label.global_position
-					var idx = player.waitingGroup.find(self)
-					target_pos.x += 0.5 + idx * 0.3
+					_set_waiting_target(player)
 					if _step_full_movement(delta):
 						switch_state(States.WAITING)
 		States.WAITING:
@@ -346,8 +344,7 @@ func _init_dealing_state() -> void:
 	start_pos = global.Deck.global_position
 	move_duration = 0.8
 	peak_height = Vector3(0, 0.5, 0)
-	var idx = global.selectGroup.find(self)
-	target_pos = Vector3(start_pos.x + 0.3 + idx * 0.3, global.Deck.global_position.y, global.Deck.global_position.z)
+	_set_dealing_target()
 	target_x_rotate = 180.0
 	target_y_rotate = 180.0
 	target_z_rotate = 360.0
@@ -457,12 +454,7 @@ func _init_to_showing_state() -> void:
 	start_pos = global_position
 	move_duration = 0.1
 	peak_height = Vector3(0.25, 0, 0)
-	var idx = player.showing_cards.find(self)
-	const limit: int = 7
-	var offsets_z: int = (idx / limit)
-	target_pos.z = global.Showing_Area_Label.global_position.z + (0.15 if team_id == 1 else -0.15) + offsets_z * (0.3 if team_id == 1 else -0.3)
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.005
-	target_pos.y = (global.Showing_Area_Label.global_position.y + 0.4) - (idx % limit - 1) * 0.2
+	_set_showing_target(player)
 	move_ability = true
 	elapsed_time = 0.0
 
@@ -471,7 +463,7 @@ func _init_showing_state() -> void:
 	start_rotation = rotation
 	start_pos = global_position
 	move_duration = 0.1
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.005
+	target_pos.x = _showing_base_position().x
 	peak_height = Vector3.ZERO
 	move_ability = true
 	elapsed_time = 0.0
@@ -481,7 +473,7 @@ func _init_to_activate_state() -> void:
 	start_rotation = rotation
 	start_pos = global_position
 	move_duration = 0.1
-	target_pos.x = global.Showing_Area_Label.global_position.x + 0.025
+	target_pos.x = _showing_base_position().x + 0.02
 	target_x_rotate = 0.0
 	target_y_rotate = 0.0
 	target_z_rotate = 0.0
@@ -535,6 +527,32 @@ func _get_hand_fan_position(player: PlayerEntity) -> Vector3:
 	target_x_rotate = 90.0 if team_id == global.local_player.team_id else 270.0
 	target_y_rotate = 90.0
 	return held_pos + fan_offset
+
+func _set_dealing_target() -> void:
+	var idx = global.selectGroup.find(self)
+	var deck_pos = global.Deck.global_position
+	target_pos = Vector3(deck_pos.x + 0.3 + idx * 0.3, deck_pos.y, deck_pos.z)
+
+func _set_waiting_target(player: PlayerEntity) -> void:
+	var base = global.WAIT_Area1_Label.global_position if player.team_id == global.local_player.team_id else global.WAIT_Area2_Label.global_position
+	var idx = player.waitingGroup.find(self)
+	var spacing = 0.3 if player.waitingGroup.size() <= 6 else 0.22
+	target_pos = base + Vector3(0.5 + idx * spacing, 0.0, 0.0)
+
+func _set_showing_target(player: PlayerEntity) -> void:
+	var idx = player.showing_cards.find(self)
+	const limit: int = 7
+	var base = _showing_base_position()
+	var row = idx / limit
+	var row_dir = 1.0 if team_id == 1 else -1.0
+	var row_offset = row * 0.28 * row_dir
+	var col_offset = (idx % limit - 1) * 0.2
+	target_pos = Vector3(base.x, base.y - col_offset, base.z + row_offset)
+
+func _showing_base_position() -> Vector3:
+	var base = global.Showing_Area_Label.global_position
+	var z_offset = 0.15 if team_id == 1 else -0.15
+	return Vector3(base.x + 0.005, base.y + 0.4, base.z + z_offset)
 
 func _should_idle_wobble() -> bool:
 	return state in [States.WAITING, States.HELD, States.SHOWING, States.TO_ACTIVATE] and (is_entered or global.selectedCard == self)
