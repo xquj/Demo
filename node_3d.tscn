@@ -963,66 +963,70 @@ shape = SubResource("BoxShape3D_i5arm")
 
 [node name="Scene3D" type="Node3D" parent="." unique_id=1699026656]
 
-[node name="Desk" type="MeshInstance3D" parent="Scene3D" unique_id=1134808714]
+[node name="Desk" type="Node3D" parent="Scene3D" unique_id=1134808714]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
+
+[node name="DeskRotation" type="Node3D" parent="Scene3D/Desk"]
+
+[node name="DeskMesh" type="MeshInstance3D" parent="Scene3D/Desk/DeskRotation"]
 mesh = SubResource("BoxMesh_tuemg")
 
-[node name="deck" type="Sprite3D" parent="Scene3D/Desk" unique_id=2088461718]
+[node name="deck" type="Sprite3D" parent="Scene3D/Desk/DeskRotation" unique_id=2088461718]
 transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.3711378e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -0.61900973, 1.5591071, 0)
 pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
-[node name="Area3D" type="Area3D" parent="Scene3D/Desk/deck" unique_id=649337809]
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk/DeskRotation/deck" unique_id=649337809]
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk/deck/Area3D" unique_id=693248043]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk/DeskRotation/deck/Area3D" unique_id=693248043]
 transform = Transform3D(0.176, 2.18557e-09, -4.585646e-16, 0, -2.1855693e-09, -0.23999998, -7.693205e-09, 0.049999997, -1.0490732e-08, 0, -4.911543e-17, -0.025705658)
 mesh = SubResource("BoxMesh_a0tk4")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/deck/Area3D" unique_id=982496746]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/DeskRotation/deck/Area3D" unique_id=982496746]
 transform = Transform3D(0.176, 2.18557e-09, -4.585646e-16, 0, -2.1855693e-09, -0.23999998, -7.693205e-09, 0.049999997, -1.0490732e-08, 0, -4.911543e-17, -0.025705658)
 shape = SubResource("BoxShape3D_jsk3o")
 
-[node name="WaitArea1" type="Label3D" parent="Scene3D/Desk" unique_id=308259907]
+[node name="WaitArea1" type="Label3D" parent="Scene3D/Desk/DeskRotation" unique_id=308259907]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.523, 1.5078853, 0.4)
 text = "待选区域"
 font_size = 18
 
-[node name="WaitArea2" type="Label3D" parent="Scene3D/Desk" unique_id=1610134510]
+[node name="WaitArea2" type="Label3D" parent="Scene3D/Desk/DeskRotation" unique_id=1610134510]
 transform = Transform3D(-1, 8.742278e-08, 3.5527137e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -0.523, 1.5078853, -0.4)
 text = "待选区域"
 font_size = 18
 
-[node name="ShowArea" type="Label3D" parent="Scene3D/Desk" unique_id=1862997443]
+[node name="ShowArea" type="Label3D" parent="Scene3D/Desk/DeskRotation" unique_id=1862997443]
 transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.51, 0, -0.015)
 font_size = 18
 
-[node name="discardPile" type="Sprite3D" parent="Scene3D/Desk" unique_id=1565670416]
+[node name="discardPile" type="Sprite3D" parent="Scene3D/Desk/DeskRotation" unique_id=1565670416]
 transform = Transform3D(-3.5527137e-15, 1.910685e-15, 0.9999997, -0.9999999, -8.35187e-23, 7.1054274e-15, 0, -0.9999997, 1.9106848e-15, 1.5265927, -0.8580466, 0)
 pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
-[node name="Area3D" type="Area3D" parent="Scene3D/Desk/discardPile" unique_id=1092992794]
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk/DeskRotation/discardPile" unique_id=1092992794]
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk/discardPile/Area3D" unique_id=347661646]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk/DeskRotation/discardPile/Area3D" unique_id=347661646]
 transform = Transform3D(0.176, 8.7422797e-10, -4.585647e-16, 0, -8.742276e-10, -0.23999995, -7.693203e-09, 0.02, -1.049073e-08, 0, -2.2130787e-17, -0.01158265)
 mesh = SubResource("BoxMesh_a0tk4")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/discardPile/Area3D" unique_id=363512088]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/DeskRotation/discardPile/Area3D" unique_id=363512088]
 transform = Transform3D(0.176, 1.5298984e-09, -4.5856447e-16, 0, -1.5298985e-09, -0.24, -7.693203e-09, 0.035, -1.0490733e-08, 0, -2.2130787e-17, -0.01158265)
 shape = SubResource("BoxShape3D_wc5p8")
 
-[node name="HeldArea1" type="Label3D" parent="Scene3D/Desk" unique_id=275769799]
+[node name="HeldArea1" type="Label3D" parent="Scene3D/Desk/DeskRotation" unique_id=275769799]
 transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.508, 0.714, 0.45)
 text = "手牌区域"
 font_size = 18
 
-[node name="CardsNumber" type="Label3D" parent="Scene3D/Desk/HeldArea1" unique_id=680430133]
+[node name="CardsNumber" type="Label3D" parent="Scene3D/Desk/DeskRotation/HeldArea1" unique_id=680430133]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.104, 0)
 text = "(14/14)"
 font_size = 12
 outline_size = 4
 
-[node name="HeldArea2" type="Label3D" parent="Scene3D/Desk" unique_id=1775729088]
+[node name="HeldArea2" type="Label3D" parent="Scene3D/Desk/DeskRotation" unique_id=1775729088]
 transform = Transform3D(4.371139e-08, -4.3711392e-08, 1, 1, -8.7422784e-08, -4.3711392e-08, 8.742278e-08, 1, 4.371139e-08, 1.508, 0.714, -0.45)
 text = "手牌区域"
 font_size = 18
@@ -1036,7 +1040,7 @@ font_size = 18
 [connection signal="mouse_entered" from="CanvasLayer/CardInfoPanel/Close_Button" to="CanvasLayer/CardInfoPanel" method="_on_close_button_mouse_entered"]
 [connection signal="mouse_exited" from="CanvasLayer/CardInfoPanel/Close_Button" to="CanvasLayer/CardInfoPanel" method="_on_close_button_mouse_exited"]
 [connection signal="button_up" from="CanvasLayer/RoundEnd_Panel/End" to="." method="_on_round_end_button_up"]
-[connection signal="mouse_entered" from="Scene3D/Desk/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_entered"]
-[connection signal="mouse_exited" from="Scene3D/Desk/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_exited"]
-[connection signal="mouse_entered" from="Scene3D/Desk/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_entered"]
-[connection signal="mouse_exited" from="Scene3D/Desk/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_exited"]
+[connection signal="mouse_entered" from="Scene3D/Desk/DeskRotation/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk/DeskRotation/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_exited"]
+[connection signal="mouse_entered" from="Scene3D/Desk/DeskRotation/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk/DeskRotation/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_exited"]

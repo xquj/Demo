@@ -13,20 +13,20 @@ func _ready() -> void:
 	global.current_play_turn = 0
 	global.round = 0
 	global.game_progress = 1
-	global.Deck = $Scene3D/Desk/deck
-	global.WAIT_Area1_Label = $Scene3D/Desk/WaitArea1
-	global.WAIT_Area2_Label = $Scene3D/Desk/WaitArea2
+	global.Deck = $Scene3D/Desk/DeskRotation/deck
+	global.WAIT_Area1_Label = $Scene3D/Desk/DeskRotation/WaitArea1
+	global.WAIT_Area2_Label = $Scene3D/Desk/DeskRotation/WaitArea2
 	global.camera = $LPlayer/SpringArm3D/Camera3D
 	global.RoundEnd_Panel = $CanvasLayer/RoundEnd_Panel
-	global.discardPile = $Scene3D/Desk/discardPile
+	global.discardPile = $Scene3D/Desk/DeskRotation/discardPile
 	global.Tame_Panel = $CanvasLayer/Tame_Panel
 	global.Combo_Panel = $CanvasLayer/Combo_Panel
 	global.Card_Info_Panel = $CanvasLayer/CardInfoPanel
-	global.Cards_Number_Label = $Scene3D/Desk/HeldArea1/CardsNumber
-	global.Showing_Area_Label = $Scene3D/Desk/ShowArea
-	global.HELD_Area1_Label = $Scene3D/Desk/HeldArea1
-	global.HELD_Area2_Label = $Scene3D/Desk/HeldArea2
-	global.Cube_Desk = $Scene3D/Desk
+	global.Cards_Number_Label = $Scene3D/Desk/DeskRotation/HeldArea1/CardsNumber
+	global.Showing_Area_Label = $Scene3D/Desk/DeskRotation/ShowArea
+	global.HELD_Area1_Label = $Scene3D/Desk/DeskRotation/HeldArea1
+	global.HELD_Area2_Label = $Scene3D/Desk/DeskRotation/HeldArea2
+	global.Cube_Desk = $Scene3D/Desk/DeskRotation
 	pass
 
 # ===================== 辅助函数：优化重复计算 =====================
