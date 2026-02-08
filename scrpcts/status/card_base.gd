@@ -70,6 +70,9 @@ const COLOR_ANIM_DURATION: int = 100  # 颜色动画时长
 const Y_OFFSET_SELECTED: float = 0.02  # 选中时Y轴偏移
 const IDLE_WOBBLE_SPEED: float = 2.4   # 空闲摆动速度
 const IDLE_WOBBLE_DEGREES: Vector3 = Vector3(2.0, 3.0, 0.6) # 空闲摆动角度
+const HAND_FAN_MAX_DEGREES: float = 18.0 # 扇形最大角度
+const HAND_FAN_RADIUS: float = 0.9       # 扇形半径
+const HAND_FAN_Y_OFFSET: float = -0.55   # 扇形基础Y偏移
 
 # TODO: 提取更多魔法数字为常量（如0.3, 0.2, 0.5, 0.1等位置偏移值）
 # ====================== 卡牌状态机制 =========================
@@ -541,18 +544,8 @@ func _init_to_held_state() -> void:
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
 	start_pos = global_position
-	# 根据队伍ID设置目标Z坐标（不同队伍的手牌在不同深度）
-	# TODO: 提取0.3, -0.3等魔法数字为常量
-	var held_pos: Vector3
-	if team_id == global.local_player.team_id:
-		held_pos = global.HELD_Area1_Label.global_position
-	else:
-		held_pos = global.HELD_Area2_Label.global_position
-	target_pos.x = held_pos.x
-	target_pos.z = held_pos.z
-	# 根据卡牌在手牌中的索引计算目标X坐标（手牌水平排列）
-	var idx = player.hand_cards.find(self)
-	target_pos.y = held_pos.y - 0.5 - idx * 0.2
+	var hand_pos = _get_hand_fan_position(player)
+	target_pos = hand_pos
 	move_ability = true
 	elapsed_time = 0.0
 
@@ -564,6 +557,11 @@ func _init_held_state() -> void:
 	var player = _get_cached_player()
 	if player != null:
 		player.can_combo = true
+		var hand_pos = _get_hand_fan_position(player)
+		target_pos = hand_pos
+		start_pos = global_position
+		move_ability = true
+		elapsed_time = 0.0
 	
 # 初始化到展示牌状态
 # 设置到手牌状态的参数：卡牌从手牌区域移动到展示区域
@@ -692,6 +690,30 @@ func _get_cached_player() -> PlayerEntity:
 func _clear_player_cache() -> void:
 	_cached_player = null
 	_cached_player_team_id = -1
+
+# 扇形手牌位置与旋转计算（邪恶冥刻风格）
+func _get_hand_fan_position(player: PlayerEntity) -> Vector3:
+	var held_pos: Vector3
+	if team_id == global.local_player.team_id:
+		held_pos = global.HELD_Area1_Label.global_position
+	else:
+		held_pos = global.HELD_Area2_Label.global_position
+	var count = max(1, player.hand_cards.size())
+	var idx = player.hand_cards.find(self)
+	var center = float(count - 1) / 2.0
+	var t = 0.0 if count == 1 else (float(idx) - center) / center
+	var angle_deg = t * HAND_FAN_MAX_DEGREES
+	var angle_rad = deg_to_rad(angle_deg)
+	var direction = -1.0 if team_id == global.local_player.team_id else 1.0
+	var fan_offset = Vector3(
+		sin(angle_rad) * HAND_FAN_RADIUS,
+		HAND_FAN_Y_OFFSET + (1.0 - cos(angle_rad)) * 0.15,
+		cos(angle_rad) * 0.05 * direction
+	)
+	target_z_rotate = angle_deg * direction
+	target_x_rotate = 90.0 if team_id == global.local_player.team_id else 270.0
+	target_y_rotate = 90.0
+	return held_pos + fan_offset
 
 # 空闲摆动条件（邪恶冥刻风格）
 func _should_idle_wobble() -> bool:
