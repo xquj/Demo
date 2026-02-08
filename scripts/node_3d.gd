@@ -54,16 +54,18 @@ func _process(delta: float) -> void:
 	global.Cards_Number_Label.text = "(" + str(hand_size) + "/" + str(HAND_CARDS_MAX) + ")"
 	match global.current_state:
 		global.GameState.DEALING:
-			#if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				#global.spring_length_animation.set_target(1,200)
-				#global.spring_length_animation.play(true)
-				#
-			#for player in global.players:
-				#player.can_combo = true
-			#global.round = global.game_progress - 1;
-			#if global.selectGroup.size() >= global.players.size() * 2:
-				#global.current_state = global.GameState.SELECTING
-			#else:
+			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
+				global.spring_length_animation.set_target(1,200)
+				global.spring_length_animation.play(true)
+				
+			for player in global.players:
+				player.can_combo = true
+			global.round = global.game_progress - 1;
+			if global.selectGroup.size() >= global.players.size() * 2:
+				pass
+				#if !global.selectGroup.back().move_ability:
+				#	global.current_state = global.GameState.SELECTING
+			else:
 				if tick % DEAL_INTERVAL == 0:
 					# 优化：使用缓存的节点引用
 					var cards_count = _cached_cards_node.get_child_count()

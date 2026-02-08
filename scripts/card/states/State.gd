@@ -50,7 +50,8 @@ func transition_to(state_script: Script) -> void:
 		return
 	var next_state: State = state_script.new(card)
 	_change_state(next_state)
-
+	
+#=============================================== 内部 ===========================================================
 func _change_state(next_state: State) -> void:
 	# 内部状态切换逻辑
 	if card == null:
@@ -77,9 +78,6 @@ func _process(delta: float) -> void:
 	# 处理移动再进行状态更新
 	_update_movement(delta)
 	update(delta)
-
-func _ready() -> void:
-	pass
 
 func _enter_internal() -> void:
 	# 防止重复进入

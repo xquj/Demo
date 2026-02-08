@@ -26,6 +26,7 @@ var duration: float
 var elapsed: float
 
 func _ready() -> void:
+	rotation = Vector3(deg_to_rad(90),deg_to_rad(90),deg_to_rad(0))
 	global_position = global.Deck.global_position
 	start_pos = global_position
 	start_rot = rotation
