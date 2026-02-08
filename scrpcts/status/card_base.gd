@@ -209,8 +209,11 @@ func _process(delta: float) -> void:
 				switch_state(States.SHOWING)
 	
 	# 空闲时增加卡牌轻微摆动，模拟邪恶冥刻风格的手感
-	if !move_ability and _should_idle_wobble():
-		_apply_idle_wobble(delta)
+	if !move_ability:
+		if _should_idle_wobble():
+			_apply_idle_wobble(delta)
+		else:
+			_reset_idle_wobble()
 	
 # ===================== 输入处理（原card_dealing的_input逻辑完全保留） =====================
 # 处理全局输入事件（鼠标点击等）
@@ -705,6 +708,11 @@ func _apply_idle_wobble(delta: float) -> void:
 		sin(_idle_wobble_time * speed * 1.1) * deg_to_rad(IDLE_WOBBLE_DEGREES.z)
 	)
 	rotation = _rest_rotation + wobble
+
+# 退出空闲摆动时复原旋转
+func _reset_idle_wobble() -> void:
+	_idle_wobble_time = 0.0
+	rotation = _rest_rotation
 
 # 切换状态
 # 切换到新的卡牌状态，并初始化该状态的参数
