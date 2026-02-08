@@ -62,7 +62,9 @@ var colorAnimation: ColorAnimationUtils
 var _cached_player: PlayerEntity = null  # 缓存的玩家对象
 var _cached_player_team_id: int = -1     # 缓存的玩家team_id
 var _idle_wobble_time: float = 0.0       # 空闲摆动计时器
+var _idle_breathe_time: float = 0.0      # 空闲呼吸计时器
 var _rest_rotation: Vector3 = Vector3.ZERO # 记录静止时的基础旋转
+var _rest_position: Vector3 = Vector3.ZERO # 记录静止时的基础位置
 const PARABOLA_MULTIPLIER: float = 4.0   # 抛物线计算常量
 # ==================== 常量定义 =========================
 const SELECTED_COLOR: Color = Color(0.627, 0.627, 0.627, 1.0)  # 选中时的颜色
@@ -70,6 +72,10 @@ const COLOR_ANIM_DURATION: int = 100  # 颜色动画时长
 const Y_OFFSET_SELECTED: float = 0.02  # 选中时Y轴偏移
 const IDLE_WOBBLE_SPEED: float = 2.4   # 空闲摆动速度
 const IDLE_WOBBLE_DEGREES: Vector3 = Vector3(2.0, 3.0, 0.6) # 空闲摆动角度
+const IDLE_BREATHE_SPEED: float = 1.4  # 空闲呼吸速度（邪恶冥刻风格慢节奏）
+const IDLE_BREATHE_HEIGHT: float = 0.008 # 空闲呼吸高度
+const HOVER_LIFT_HEIGHT: float = 0.015   # 鼠标悬停时卡牌上浮高度
+const EASE_IN_OUT_EXPONENT: float = 2.0  # 缓动曲线强度
 const HAND_FAN_MAX_DEGREES: float = 18.0 # 扇形最大角度
 const HAND_FAN_RADIUS: float = 0.9       # 扇形半径
 const HAND_FAN_Y_OFFSET: float = -0.55   # 扇形基础Y偏移
@@ -107,6 +113,7 @@ func _ready() -> void:
 	# 保存原始颜色，用于后续恢复
 	original_modulate = modulate
 	_rest_rotation = rotation
+	_rest_position = global_position
 	# 初始隐藏碰撞区，发牌完成后显示（避免发牌过程中误触）
 	area.visible = false
 	# 初始化卡牌状态
@@ -361,8 +368,9 @@ func _update_movement_progress(delta: float) -> float:
 # 返回: true表示动画完成
 func _process_full_movement(delta: float) -> bool:
 	var progress = _update_movement_progress(delta)
-	_apply_3d_movement(progress)
-	var target_rot = _apply_3d_rotation(progress)
+	var eased_progress = _ease_in_out(progress)
+	_apply_3d_movement(eased_progress)
+	var target_rot = _apply_3d_rotation(eased_progress)
 	if progress >= 1.0:
 		_finalize_movement(target_rot)
 		return true
@@ -376,7 +384,8 @@ func _process_full_movement(delta: float) -> bool:
 # 返回: true表示动画完成
 func _process_axis_movement(delta: float, update_x: bool, update_z: bool, update_y: bool) -> bool:
 	var progress = _update_movement_progress(delta)
-	_apply_3d_movement(progress, update_x, update_z, update_y)
+	var eased_progress = _ease_in_out(progress)
+	_apply_3d_movement(eased_progress, update_x, update_z, update_y)
 	return progress >= 1.0
 
 # 完成Y轴移动（优化：提取重复的Y轴移动完成逻辑）
@@ -388,6 +397,7 @@ func _finalize_y_movement() -> void:
 	target_pos = start_pos
 	start_pos = temp
 	_rest_rotation = rotation
+	_rest_position = global_position
 	move_ability = false
 
 # 选中卡牌处理（优化：提取重复的选中逻辑）
@@ -671,6 +681,7 @@ func _finalize_movement(target_rot: Vector3) -> void:
 	rotation.y = target_rot.y
 	rotation.z = target_rot.z
 	_rest_rotation = rotation
+	_rest_position = global_position
 
 # 获取缓存的玩家对象（优化：避免重复的数组访问和计算）
 # 根据team_id获取对应的玩家对象，使用缓存机制避免重复查找
@@ -723,6 +734,7 @@ func _should_idle_wobble() -> bool:
 # 空闲摆动效果（轻微旋转摇摆）
 func _apply_idle_wobble(delta: float) -> void:
 	_idle_wobble_time += delta
+	_idle_breathe_time += delta
 	var speed = IDLE_WOBBLE_SPEED
 	var wobble = Vector3(
 		sin(_idle_wobble_time * speed) * deg_to_rad(IDLE_WOBBLE_DEGREES.x),
@@ -730,11 +742,22 @@ func _apply_idle_wobble(delta: float) -> void:
 		sin(_idle_wobble_time * speed * 1.1) * deg_to_rad(IDLE_WOBBLE_DEGREES.z)
 	)
 	rotation = _rest_rotation + wobble
+	var breathe_offset = sin(_idle_breathe_time * IDLE_BREATHE_SPEED) * IDLE_BREATHE_HEIGHT
+	var hover_offset = HOVER_LIFT_HEIGHT if (is_entered or global.selectedCard == self) else 0.0
+	global_position = _rest_position + Vector3(0.0, breathe_offset + hover_offset, 0.0)
 
 # 退出空闲摆动时复原旋转
 func _reset_idle_wobble() -> void:
 	_idle_wobble_time = 0.0
+	_idle_breathe_time = 0.0
 	rotation = _rest_rotation
+	global_position = _rest_position
+
+# 缓动曲线（邪恶冥刻风格更“厚重”的手感）
+func _ease_in_out(t: float) -> float:
+	var clamped = clampf(t, 0.0, 1.0)
+	var smooth = clamped * clamped * (3.0 - 2.0 * clamped)
+	return pow(smooth, EASE_IN_OUT_EXPONENT)
 
 # 切换状态
 # 切换到新的卡牌状态，并初始化该状态的参数
