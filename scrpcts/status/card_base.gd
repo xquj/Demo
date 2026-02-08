@@ -43,16 +43,20 @@ var _rest_rotation := Vector3.ZERO
 var _rest_position := Vector3.ZERO
 
 # ===================== 常量 =====================
-const PARABOLA_MULTIPLIER := 4.0
 const SELECTED_COLOR := Color(0.627, 0.627, 0.627, 1.0)
 const COLOR_ANIM_DURATION := 100
 const Y_OFFSET_SELECTED := 0.02
+
 const IDLE_WOBBLE_SPEED := 2.4
 const IDLE_WOBBLE_DEGREES := Vector3(2.0, 3.0, 0.6)
 const IDLE_BREATHE_SPEED := 1.4
 const IDLE_BREATHE_HEIGHT := 0.008
 const HOVER_LIFT_HEIGHT := 0.015
+
 const EASE_IN_OUT_EXPONENT := 2.0
+const ARC_SIN_HEIGHT_SCALE := 1.0
+const ARC_FORWARD_DAMP := 0.15
+
 const HAND_FAN_MAX_DEGREES := 18.0
 const HAND_FAN_RADIUS := 0.9
 const HAND_FAN_Y_OFFSET := -0.55
@@ -246,13 +250,13 @@ func _update_movement_progress(delta: float) -> float:
 		elapsed_time = move_duration
 		return 1.0
 	elapsed_time = minf(elapsed_time + delta, move_duration)
-	return elapsed_time / move_duration
+	return clampf(elapsed_time / move_duration, 0.0, 1.0)
 
 func _step_full_movement(delta: float) -> bool:
 	var progress = _update_movement_progress(delta)
-	var eased_progress = _ease_in_out(progress)
-	_apply_3d_movement(eased_progress)
-	var target_rot = _apply_3d_rotation(eased_progress)
+	var eased = _ease_in_out(progress)
+	_apply_trajectory(eased)
+	var target_rot = _apply_3d_rotation(eased)
 	if progress >= 1.0:
 		_finalize_movement(target_rot)
 		return true
@@ -260,9 +264,40 @@ func _step_full_movement(delta: float) -> bool:
 
 func _step_axis_movement(delta: float, update_x: bool, update_z: bool, update_y: bool) -> bool:
 	var progress = _update_movement_progress(delta)
-	var eased_progress = _ease_in_out(progress)
-	_apply_3d_movement(eased_progress, update_x, update_z, update_y)
+	var eased = _ease_in_out(progress)
+	_apply_trajectory_axis(eased, update_x, update_z, update_y)
 	return progress >= 1.0
+
+func _apply_trajectory(progress: float) -> void:
+	var base = _lerp_position(start_pos, target_pos, progress)
+	var arc = _arc_offset(progress, start_pos, target_pos, peak_height)
+	global_position = base + arc
+
+func _apply_trajectory_axis(progress: float, update_x: bool, update_z: bool, update_y: bool) -> void:
+	var base = _lerp_position(start_pos, target_pos, progress)
+	var arc = _arc_offset(progress, start_pos, target_pos, peak_height)
+	if update_x:
+		global_position.x = base.x + arc.x
+	if update_z:
+		global_position.z = base.z + arc.z
+	if update_y:
+		global_position.y = base.y + arc.y
+
+func _lerp_position(from: Vector3, to: Vector3, t: float) -> Vector3:
+	return Vector3(
+		lerp(from.x, to.x, t),
+		lerp(from.y, to.y, t),
+		lerp(from.z, to.z, t)
+	)
+
+func _arc_offset(t: float, from: Vector3, to: Vector3, height: Vector3) -> Vector3:
+	var sin_arc = sin(PI * t) * ARC_SIN_HEIGHT_SCALE
+	var forward = (to - from) * (t * (1.0 - t)) * ARC_FORWARD_DAMP
+	return Vector3(
+		height.x * sin_arc + forward.x,
+		height.y * sin_arc + forward.y,
+		height.z * sin_arc + forward.z
+	)
 
 func _finalize_y_movement() -> void:
 	global_position = target_pos
@@ -278,7 +313,7 @@ func _select_card(target_pos_: Vector3, peak_height_: Vector3) -> void:
 		if global.selectedCard != null:
 			global.selectedCard.move_ability = true
 			global.selectedCard.elapsed_time = 0.0
-			global.selectedCard.peak_height = Vector3(0, 0, 0)
+			global.selectedCard.peak_height = Vector3.ZERO
 			global.selectedCard.move_duration = 0.1
 		global.selectedCard = self
 		move_ability = true
@@ -289,7 +324,7 @@ func _select_card(target_pos_: Vector3, peak_height_: Vector3) -> void:
 	else:
 		move_ability = true
 		elapsed_time = 0.0
-		peak_height = Vector3(0, 0, 0)
+		peak_height = Vector3.ZERO
 		global.selectedCard = null
 		move_duration = 0.1
 
@@ -453,15 +488,6 @@ func _init_to_activate_state() -> void:
 	peak_height = Vector3.ZERO
 	move_ability = true
 	elapsed_time = 0.0
-
-func _apply_3d_movement(progress: float, update_x: bool = true, update_z: bool = true, update_y: bool = true) -> void:
-	var parabola_factor = PARABOLA_MULTIPLIER * progress * (1.0 - progress)
-	if update_x:
-		global_position.x = lerp(start_pos.x, target_pos.x, progress) + parabola_factor * peak_height.x
-	if update_z:
-		global_position.z = lerp(start_pos.z, target_pos.z, progress) + parabola_factor * peak_height.z
-	if update_y:
-		global_position.y = lerp(start_pos.y, target_pos.y, progress) + parabola_factor * peak_height.y
 
 func _apply_3d_rotation(progress: float) -> Vector3:
 	var target_x_rot = start_rotation.x + deg_to_rad(target_x_rotate)
