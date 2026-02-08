@@ -303,7 +303,7 @@ func _input(event: InputEvent) -> void:
 						match skill_type:
 							Type.Immediately:
 								switch_state(States.DISCARD)
-							Type.Permanent:
+							Type.Permanent: 
 								switch_state(States.SHOWING)
 							Type.Initiative:
 								switch_state(States.SHOWING)
@@ -395,7 +395,6 @@ func _select_card(target_pos_: Vector3,peak_height_: Vector3) -> void:
 			global.selectedCard.move_duration = 0.1
 		# 设置当前卡牌为选中状态，启动浮动动画
 		global.selectedCard = self
-		#global.selectedCard.reparent(global.camera)
 		move_ability = true
 		target_pos = target_pos_
 		elapsed_time = 0.0
