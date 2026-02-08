@@ -1,0 +1,765 @@
+[gd_scene format=3 uid="uid://cox6bf53484ix"]
+
+[ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scrpcts/node_3d.gd" id="1_i5arm"]
+[ext_resource type="Script" uid="uid://6nv3bqigk3pp" path="res://scrpcts/l_player.gd" id="2_i5arm"]
+[ext_resource type="Script" uid="uid://b5od50la0ruor" path="res://scrpcts/spring_arm_3d.gd" id="2_noarx"]
+[ext_resource type="Script" uid="uid://q771jydym8e2" path="res://scrpcts/UI/inform_panel.gd" id="2_wc5p8"]
+[ext_resource type="Script" uid="uid://bvysc6u70obts" path="res://scrpcts/UI/combo_panel.gd" id="3_jsk3o"]
+[ext_resource type="Script" uid="uid://chka4jui1wesk" path="res://scrpcts/UI/round_panel.gd" id="4_6iypd"]
+[ext_resource type="Texture2D" uid="uid://26y3xcr6o70b" path="res://textrue/cards/wyrm_family/agni.png" id="4_jka67"]
+[ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
+[ext_resource type="Script" uid="uid://buvu7c0f88nwl" path="res://scrpcts/UI/tab_bar.gd" id="5_6iypd"]
+[ext_resource type="Texture2D" uid="uid://bs6i4cla8k8oj" path="res://textrue/cards/fire_family/asmodeus.png" id="5_i5arm"]
+[ext_resource type="Script" uid="uid://cuk111hpshq5" path="res://scrpcts/UI/card_info_panel.gd" id="6_tereu"]
+[ext_resource type="Texture2D" uid="uid://rrswyrqqy6i2" path="res://textrue/coin/coin1.png" id="6_wlxy5"]
+[ext_resource type="Texture2D" uid="uid://sgfvdfhfm2gw" path="res://textrue/coin/coin3.png" id="7_3v7ru"]
+[ext_resource type="Texture2D" uid="uid://dqxe51s8a56es" path="res://textrue/coin/coin2.png" id="8_tcnuu"]
+[ext_resource type="Texture2D" uid="uid://d1jm8362lj450" path="res://textrue/cards/fire_family/hestia.png" id="14_3v7ru"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tuemg"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.078431375, 0.078431375, 0.09803922, 0.54901963)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.05882353, 0.05882353, 0.05882353, 0.78431374)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tcnuu"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.22352941, 0.22352941, 0.22352941, 0.8039216)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3v7ru"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.09803922, 0.09803922, 0.09803922, 0.7058824)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[sub_resource type="BoxMesh" id="BoxMesh_i5arm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_i5arm"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_4xowi"]
+size = Vector3(3.4, 0.05, 2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jsk3o"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wc5p8"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_3v7ru"]
+size = Vector3(1.5, 0.05, 2)
+
+[node name="Node3D" type="Node3D" unique_id=1713464870]
+script = ExtResource("1_i5arm")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=175791058]
+
+[node name="Tame_Panel" type="Panel" parent="CanvasLayer" unique_id=147579769]
+visible = false
+offset_left = 420.0
+offset_top = 449.0
+offset_right = 772.0
+offset_bottom = 627.0
+
+[node name="Tame" type="Button" parent="CanvasLayer/Tame_Panel" unique_id=1137116482]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.16443183
+anchor_top = 0.69129217
+anchor_right = 0.2786364
+anchor_bottom = 0.86529213
+offset_left = 0.11999512
+offset_top = -0.05000305
+offset_right = -0.08000946
+offset_bottom = -0.022003174
+text = "驯服"
+metadata/_edit_use_anchors_ = true
+
+[node name="Sell" type="Button" parent="CanvasLayer/Tame_Panel" unique_id=894247793]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7496591
+anchor_top = 0.69691014
+anchor_right = 0.8638637
+anchor_bottom = 0.8709101
+offset_left = 0.11999512
+offset_top = -0.05000305
+offset_right = -0.08000946
+offset_bottom = -0.022003174
+text = "售卖"
+metadata/_edit_use_anchors_ = true
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer/Tame_Panel" unique_id=585345529]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.26988637
+anchor_top = 0.084269665
+anchor_right = 0.71602273
+anchor_bottom = 0.3092697
+offset_right = -0.040000916
+offset_bottom = -0.05000305
+text = "对这张牌进行的操作"
+editable = false
+context_menu_enabled = false
+emoji_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+middle_mouse_paste_enabled = false
+empty_selection_clipboard_enabled = false
+tab_input_mode = false
+virtual_keyboard_enabled = false
+metadata/_edit_use_anchors_ = true
+
+[node name="Tips_Panel" type="Panel" parent="CanvasLayer" unique_id=431075006]
+visible = false
+offset_left = 930.0
+offset_top = 301.0
+offset_right = 1058.0
+offset_bottom = 364.0
+script = ExtResource("2_wc5p8")
+
+[node name="Label" type="Label" parent="CanvasLayer/Tips_Panel" unique_id=1367754106]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.047000002
+anchor_top = 0.11100001
+anchor_right = 0.95300007
+anchor_bottom = 0.88900006
+offset_left = -0.01600027
+offset_top = 0.0069994926
+offset_right = 0.015991211
+offset_bottom = -0.007003784
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Combo_Panel" type="Panel" parent="CanvasLayer" unique_id=737484937]
+visible = false
+offset_left = 2.0
+offset_top = 449.0
+offset_right = 1150.0
+offset_bottom = 645.0
+script = ExtResource("3_jsk3o")
+
+[node name="Use" type="Button" parent="CanvasLayer/Combo_Panel" unique_id=1626887943]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.16443183
+anchor_top = 0.69129217
+anchor_right = 0.2786364
+anchor_bottom = 0.86529213
+offset_left = 0.11999512
+offset_top = -0.05000305
+offset_right = -0.08000946
+offset_bottom = -0.022003174
+text = "使用该卡牌
+"
+metadata/_edit_use_anchors_ = true
+
+[node name="InventoryPanel" type="Panel" parent="CanvasLayer/Combo_Panel/Use" unique_id=1156784342]
+layout_mode = 0
+offset_left = 331.11227
+offset_top = -97.44324
+offset_right = 516.1123
+offset_bottom = -52.443237
+
+[node name="Label" type="Label" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel" unique_id=1637786983]
+layout_mode = 0
+offset_left = -96.0
+offset_top = 8.0
+offset_bottom = 36.0
+theme_override_font_sizes/font_size = 20
+text = "支付费用 : "
+
+[node name="Slot1" type="Button" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel" unique_id=1773368964]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 5.0
+offset_right = 42.0
+offset_bottom = 41.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel/Slot1" unique_id=1074472061]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot2" type="Button" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel" unique_id=1431932497]
+layout_mode = 0
+offset_left = 50.0
+offset_top = 5.0
+offset_right = 88.0
+offset_bottom = 41.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel/Slot2" unique_id=1947262946]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot3" type="Button" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel" unique_id=934273616]
+layout_mode = 0
+offset_left = 96.0
+offset_top = 5.0
+offset_right = 134.0
+offset_bottom = 41.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel/Slot3" unique_id=1570784226]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot4" type="Button" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel" unique_id=312794913]
+layout_mode = 0
+offset_left = 142.0
+offset_top = 5.0
+offset_right = 180.0
+offset_bottom = 41.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/Combo_Panel/Use/InventoryPanel/Slot4" unique_id=2139601911]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="End" type="Button" parent="CanvasLayer/Combo_Panel" unique_id=310465356]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7338087
+anchor_top = 0.66691905
+anchor_right = 0.8480133
+anchor_bottom = 0.840919
+offset_left = 0.11999512
+offset_top = -0.05000305
+offset_right = -0.08000946
+offset_bottom = -0.022003174
+text = "结束我的回合"
+metadata/_edit_use_anchors_ = true
+
+[node name="Score2" type="Label" parent="CanvasLayer/Combo_Panel" unique_id=949042426]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.08434785
+anchor_top = 0.22754546
+anchor_right = 0.15513046
+anchor_bottom = 0.33849496
+offset_left = -3.0517578e-05
+offset_top = -0.054000854
+offset_right = -0.4000244
+offset_bottom = 1.9779968
+metadata/_edit_use_anchors_ = true
+
+[node name="InformationUI" type="Panel" parent="CanvasLayer" unique_id=1657703625]
+offset_left = 239.0
+offset_top = 1.0
+offset_right = 880.0
+offset_bottom = 33.0
+script = ExtResource("4_6iypd")
+
+[node name="Label" type="Label" parent="CanvasLayer/InformationUI" unique_id=1544995268]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.42997324
+anchor_top = 0.125
+anchor_right = 0.54435706
+anchor_bottom = 0.84325004
+offset_right = -0.3199997
+offset_bottom = 0.01599884
+text = "当前回合 :"
+metadata/_edit_use_anchors_ = true
+
+[node name="Round" type="Label" parent="CanvasLayer/InformationUI/Label" unique_id=1881229621]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.040000003
+anchor_top = 0.156
+anchor_right = 0.075
+anchor_bottom = 0.87500006
+offset_left = 74.29268
+offset_top = -2.1435554
+offset_right = 75.97268
+offset_bottom = 4.3194427
+
+[node name="Name" type="Label" parent="CanvasLayer/InformationUI" unique_id=2146069521]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.01087942
+anchor_top = 0.125
+anchor_right = 0.07735273
+anchor_bottom = 0.84325004
+offset_right = -0.3199997
+offset_bottom = 0.01599884
+text = "名称: "
+metadata/_edit_use_anchors_ = true
+
+[node name="Score" type="Label" parent="CanvasLayer/InformationUI" unique_id=1175066496]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8640001
+anchor_top = 0.125
+anchor_right = 0.9300001
+anchor_bottom = 0.84400004
+offset_left = 0.14996338
+offset_right = 0.13336182
+offset_bottom = -0.0080013275
+text = "分数: "
+metadata/_edit_use_anchors_ = true
+
+[node name="TabBar" type="Panel" parent="CanvasLayer" unique_id=1149331725]
+offset_left = 1137.0
+offset_top = 211.0
+offset_right = 1155.0
+offset_bottom = 410.0
+script = ExtResource("5_6iypd")
+
+[node name="Panel" type="Panel" parent="CanvasLayer/TabBar" unique_id=1809824570]
+layout_mode = 0
+offset_right = 18.0
+offset_bottom = 199.0
+
+[node name="point" type="Label" parent="CanvasLayer/TabBar/Panel" unique_id=240500203]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.41700003
+anchor_right = 0.72200006
+anchor_bottom = 0.53300005
+offset_left = 2.0
+offset_top = 0.016998291
+offset_right = 0.0039987564
+offset_bottom = -0.06700897
+pivot_offset = Vector2(5.5, 12.25)
+text = "<"
+
+[node name="CoinPanel" type="Panel" parent="CanvasLayer/TabBar" unique_id=1405791529]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 3.0
+offset_right = 122.0
+offset_bottom = 98.0
+
+[node name="Coin1_Slot" type="Button" parent="CanvasLayer/TabBar/CoinPanel" unique_id=568113312]
+layout_mode = 0
+offset_left = 3.75
+offset_top = 4.100006
+offset_right = 32.25
+offset_bottom = 30.100006
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3v7ru")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+
+[node name="Coin1" type="Sprite2D" parent="CanvasLayer/TabBar/CoinPanel/Coin1_Slot" unique_id=2041739102]
+position = Vector2(14.25, 12.899994)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("6_wlxy5")
+
+[node name="Label" type="Label" parent="CanvasLayer/TabBar/CoinPanel/Coin1_Slot/Coin1" unique_id=864769708]
+anchors_preset = -1
+anchor_left = 1.598
+anchor_right = 3.3860002
+anchor_bottom = 0.9620001
+offset_left = -44.369354
+offset_top = -40.0
+offset_right = -40.98535
+offset_bottom = -39.036003
+theme_override_font_sizes/font_size = 55
+text = "X  2"
+
+[node name="Coin2_Slot" type="Button" parent="CanvasLayer/TabBar/CoinPanel" unique_id=2126076383]
+layout_mode = 0
+offset_left = 3.75
+offset_top = 34.1
+offset_right = 32.25
+offset_bottom = 60.1
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3v7ru")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+
+[node name="Coin2" type="Sprite2D" parent="CanvasLayer/TabBar/CoinPanel/Coin2_Slot" unique_id=1029666104]
+position = Vector2(14.25, 12.900024)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("8_tcnuu")
+
+[node name="Label" type="Label" parent="CanvasLayer/TabBar/CoinPanel/Coin2_Slot/Coin2" unique_id=922700974]
+anchors_preset = -1
+anchor_left = 1.598
+anchor_right = 3.3860002
+anchor_bottom = 0.9620001
+offset_left = -44.369354
+offset_top = -40.0
+offset_right = -40.98535
+offset_bottom = -39.036003
+theme_override_font_sizes/font_size = 55
+text = "X  2"
+
+[node name="Coin3_Slot" type="Button" parent="CanvasLayer/TabBar/CoinPanel" unique_id=919335765]
+layout_mode = 0
+offset_left = 3.75
+offset_top = 64.1
+offset_right = 32.25
+offset_bottom = 90.1
+theme_override_styles/pressed = SubResource("StyleBoxFlat_3v7ru")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/TabBar/CoinPanel/Coin3_Slot" unique_id=1369600605]
+position = Vector2(14.25, 12.899994)
+scale = Vector2(0.3, 0.3)
+texture = ExtResource("7_3v7ru")
+
+[node name="Label" type="Label" parent="CanvasLayer/TabBar/CoinPanel/Coin3_Slot/Coin3" unique_id=2117967990]
+anchors_preset = -1
+anchor_left = 1.5050001
+anchor_top = -0.013
+anchor_right = 3.3320003
+anchor_bottom = 0.9620001
+offset_left = -43.0381
+offset_top = -38.986
+offset_right = -43.008118
+offset_bottom = -39.036003
+theme_override_font_sizes/font_size = 55
+text = "X  2"
+metadata/_edit_use_anchors_ = true
+
+[node name="InventoryPanel" type="Panel" parent="CanvasLayer/TabBar" unique_id=1813580225]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 101.0
+offset_right = 122.0
+offset_bottom = 196.0
+
+[node name="Slot1" type="Button" parent="CanvasLayer/TabBar/InventoryPanel" unique_id=1096968575]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 46.0
+offset_bottom = 44.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/TabBar/InventoryPanel/Slot1" unique_id=695129890]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot2" type="Button" parent="CanvasLayer/TabBar/InventoryPanel" unique_id=1120782808]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 8.0
+offset_right = 92.0
+offset_bottom = 44.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/TabBar/InventoryPanel/Slot2" unique_id=625616514]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot3" type="Button" parent="CanvasLayer/TabBar/InventoryPanel" unique_id=1253072533]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 51.0
+offset_right = 46.0
+offset_bottom = 87.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/TabBar/InventoryPanel/Slot3" unique_id=678269473]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="Slot4" type="Button" parent="CanvasLayer/TabBar/InventoryPanel" unique_id=1228579278]
+layout_mode = 0
+offset_left = 54.0
+offset_top = 51.0
+offset_right = 92.0
+offset_bottom = 87.0
+theme_override_styles/pressed = SubResource("StyleBoxFlat_tuemg")
+theme_override_styles/hover = SubResource("StyleBoxFlat_tcnuu")
+toggle_mode = true
+
+[node name="Coin3" type="Sprite2D" parent="CanvasLayer/TabBar/InventoryPanel/Slot4" unique_id=716741919]
+position = Vector2(19, 18)
+scale = Vector2(0.35, 0.35)
+texture = ExtResource("7_3v7ru")
+
+[node name="CardInfoPanel" type="Panel" parent="CanvasLayer" unique_id=872267797]
+anchors_preset = -1
+anchor_left = 0.344
+anchor_top = 0.09
+anchor_right = 0.61700004
+anchor_bottom = 0.675
+offset_left = -21.288025
+offset_top = -78.32001
+offset_right = 104.21594
+offset_bottom = 72.600006
+scale = Vector2(0.73, 0.73)
+pivot_offset = Vector2(225, 250)
+script = ExtResource("6_tereu")
+
+[node name="Close_Button" type="Panel" parent="CanvasLayer/CardInfoPanel" unique_id=920371706]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8931818
+anchor_top = 0.018867925
+anchor_right = 0.975
+anchor_bottom = 0.08490566
+grow_vertical = 2
+pivot_offset = Vector2(18, 17)
+localize_numeral_system = false
+metadata/_edit_use_anchors_ = true
+
+[node name="point" type="Label" parent="CanvasLayer/CardInfoPanel/Close_Button" unique_id=602856995]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.27738965
+anchor_top = 0.08355565
+anchor_right = 0.72211736
+anchor_bottom = 0.972
+offset_left = 0.013946533
+offset_top = -3.0080006
+offset_right = 0.00374794
+offset_bottom = 0.008003235
+theme_override_font_sizes/font_size = 25
+text = "X"
+metadata/_edit_use_anchors_ = true
+
+[node name="Panel" type="Panel" parent="CanvasLayer/CardInfoPanel" unique_id=765841935]
+layout_mode = 0
+offset_left = 26.451904
+offset_top = 48.0
+offset_right = 371.57538
+offset_bottom = 501.2965
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/CardInfoPanel" unique_id=2037335792]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.07788499
+anchor_top = 0.10641535
+anchor_right = 0.82288486
+anchor_bottom = 0.9314154
+offset_left = -0.17295837
+offset_top = -1.6068954
+offset_right = 1445.0271
+offset_bottom = 1925.1431
+scale = Vector2(0.185, 0.185)
+texture = ExtResource("4_jka67")
+stretch_mode = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=230909793]
+transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
+shadow_enabled = true
+
+[node name="LPlayer" type="CharacterBody3D" parent="." unique_id=44332185]
+physics_interpolation_mode = 2
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -0.004, 0.275)
+script = ExtResource("2_i5arm")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="LPlayer" unique_id=525352436]
+transform = Transform3D(1, 0, 0, 0, 0.93969274, -0.34202015, 0, 0.34202015, 0.93969274, 0, 0, 0)
+spring_length = 1.5
+script = ExtResource("2_noarx")
+
+[node name="Camera3D" type="Camera3D" parent="LPlayer/SpringArm3D" unique_id=945114509]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)
+
+[node name="cards" type="Node" parent="." unique_id=1379109891]
+
+[node name="hestia" type="Sprite3D" parent="cards" unique_id=159389927]
+transform = Transform3D(-0.9999999, -8.742278e-08, -3.8213697e-15, 0, -4.371139e-08, 0.9999997, -8.742277e-08, 1, 4.3711374e-08, -1.150115, -0.08082219, 0)
+visible = false
+pixel_size = 0.0001
+texture = ExtResource("14_3v7ru")
+
+[node name="card_back" type="Sprite3D" parent="cards/hestia" unique_id=1596690081]
+transform = Transform3D(1, -2.1316282e-14, -1.0658141e-14, 2.1316282e-14, 0.99999994, -3.5527137e-15, 7.105428e-15, 3.5527137e-15, 1, 0, -1.5641888e-10, -5.184859e-05)
+pixel_size = 0.0001
+texture = ExtResource("4_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="cards/hestia" unique_id=101593383]
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/hestia/Area3D" unique_id=851639876]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+mesh = SubResource("BoxMesh_i5arm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="cards/hestia/Area3D" unique_id=1818790443]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+shape = SubResource("BoxShape3D_i5arm")
+
+[node name="agni" type="Sprite3D" parent="cards" unique_id=135442660]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -1.150115, -0.08048407, 0)
+visible = false
+pixel_size = 0.0001
+texture = ExtResource("4_jka67")
+
+[node name="card_back" type="Sprite3D" parent="cards/agni" unique_id=1566023626]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, -3.5527137e-15, 0, 0, 1, 0, -4.0139225e-11, -8.172542e-05)
+pixel_size = 0.0001
+texture = ExtResource("4_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="cards/agni" unique_id=1172157372]
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+visible = false
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/agni/Area3D" unique_id=1320489222]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+mesh = SubResource("BoxMesh_i5arm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="cards/agni/Area3D" unique_id=592791881]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+shape = SubResource("BoxShape3D_i5arm")
+
+[node name="asmodeus" type="Sprite3D" parent="cards" unique_id=1130915504]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -1.150115, -0.08048407, 0)
+visible = false
+pixel_size = 0.0001
+texture = ExtResource("5_i5arm")
+
+[node name="card_back" type="Sprite3D" parent="cards/asmodeus" unique_id=1491841671]
+transform = Transform3D(1, 0, 0, 0, 0.99999994, -7.1054274e-15, 0, 0, 1, 0, -4.2014392e-11, -3.8824975e-05)
+pixel_size = 0.0001
+texture = ExtResource("4_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="cards/asmodeus" unique_id=447247618]
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+visible = false
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/asmodeus/Area3D" unique_id=1939342486]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+mesh = SubResource("BoxMesh_i5arm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="cards/asmodeus/Area3D" unique_id=1074920971]
+transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
+visible = false
+shape = SubResource("BoxShape3D_i5arm")
+
+[node name="Scene3D" type="Node3D" parent="." unique_id=1699026656]
+
+[node name="Desk1" type="MeshInstance3D" parent="Scene3D" unique_id=1733647672]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13500533, -0.15674543, 0)
+mesh = SubResource("BoxMesh_4xowi")
+
+[node name="deck" type="Sprite3D" parent="Scene3D/Desk1" unique_id=2088461718]
+transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.371138e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -1.2851204, 0.07996702, 0)
+pixel_size = 0.0001
+texture = ExtResource("4_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk1/deck" unique_id=649337809]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk1/deck/Area3D" unique_id=693248043]
+transform = Transform3D(0.176, 2.18557e-09, -4.585646e-16, 0, -2.1855693e-09, -0.23999998, -7.693205e-09, 0.049999997, -1.0490732e-08, 0, -4.911543e-17, -0.025705658)
+mesh = SubResource("BoxMesh_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk1/deck/Area3D" unique_id=982496746]
+transform = Transform3D(0.176, 2.18557e-09, -4.585646e-16, 0, -2.1855693e-09, -0.23999998, -7.693205e-09, 0.049999997, -1.0490732e-08, 0, -4.911543e-17, -0.025705658)
+shape = SubResource("BoxShape3D_jsk3o")
+
+[node name="discardPile" type="Sprite3D" parent="Scene3D/Desk1" unique_id=1565670416]
+transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.371138e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, 1.5230258, 0.04740128, 0)
+pixel_size = 0.0001
+texture = ExtResource("4_r3fl7")
+
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk1/discardPile" unique_id=1092992794]
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Scene3D/Desk1/discardPile/Area3D" unique_id=347661646]
+transform = Transform3D(0.176, 8.7422797e-10, -4.585647e-16, 0, -8.742276e-10, -0.23999995, -7.693203e-09, 0.02, -1.049073e-08, 0, -2.2130787e-17, -0.01158265)
+mesh = SubResource("BoxMesh_a0tk4")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk1/discardPile/Area3D" unique_id=363512088]
+transform = Transform3D(0.176, 1.5298984e-09, -4.5856447e-16, 0, -1.5298985e-09, -0.24, -7.693203e-09, 0.035, -1.0490733e-08, 0, -2.2130787e-17, -0.01158265)
+shape = SubResource("BoxShape3D_wc5p8")
+
+[node name="HeldArea1" type="Label3D" parent="Scene3D/Desk1" unique_id=275769799]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4830054, 0.028745428, 0.8)
+text = "手牌区域"
+font_size = 18
+
+[node name="CardsNumber" type="Label3D" parent="Scene3D/Desk1/HeldArea1" unique_id=680430133]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.104, 0)
+text = "(14/14)"
+font_size = 12
+outline_size = 4
+
+[node name="HeldArea2" type="Label3D" parent="Scene3D/Desk1" unique_id=1775729088]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -1.4830054, 0.028745428, -0.81)
+text = "手牌区域"
+font_size = 18
+
+[node name="WaitArea1" type="Label3D" parent="Scene3D/Desk1" unique_id=308259907]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -1.4830054, 0.028745428, 0.525)
+text = "待选区域"
+font_size = 18
+
+[node name="WaitArea2" type="Label3D" parent="Scene3D/Desk1" unique_id=1610134510]
+transform = Transform3D(-1, 8.742278e-08, 3.821371e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -1.4830054, 0.028745428, -0.525)
+text = "待选区域"
+font_size = 18
+
+[node name="Desk2" type="MeshInstance3D" parent="Scene3D" unique_id=480626543]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.65, -0.157, 0)
+mesh = SubResource("BoxMesh_3v7ru")
+
+[node name="ShowArea" type="Label3D" parent="Scene3D/Desk2" unique_id=1862997443]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0.03, -0.015)
+text = "展示区域"
+font_size = 18
+
+[connection signal="button_up" from="CanvasLayer/Tame_Panel/Tame" to="." method="_on_tame_button_up"]
+[connection signal="button_up" from="CanvasLayer/Tame_Panel/Sell" to="." method="_on_sell_button_up"]
+[connection signal="button_up" from="CanvasLayer/Combo_Panel/Use" to="CanvasLayer/Combo_Panel" method="_on_use_button_up"]
+[connection signal="button_up" from="CanvasLayer/Combo_Panel/End" to="CanvasLayer/Combo_Panel" method="_on_end_button_up"]
+[connection signal="mouse_entered" from="CanvasLayer/TabBar/Panel" to="CanvasLayer/TabBar" method="_on_panel_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/TabBar/Panel" to="CanvasLayer/TabBar" method="_on_panel_mouse_exited"]
+[connection signal="mouse_entered" from="CanvasLayer/CardInfoPanel/Close_Button" to="CanvasLayer/CardInfoPanel" method="_on_close_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/CardInfoPanel/Close_Button" to="CanvasLayer/CardInfoPanel" method="_on_close_button_mouse_exited"]
+[connection signal="mouse_entered" from="Scene3D/Desk1/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk1/deck/Area3D" to="CanvasLayer/Tips_Panel" method="发牌堆_exited"]
+[connection signal="mouse_entered" from="Scene3D/Desk1/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk1/discardPile/Area3D" to="CanvasLayer/Tips_Panel" method="弃牌堆_exited"]

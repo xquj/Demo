@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://d3kp3eg7ktnq1"]
+
+[ext_resource type="Script" uid="uid://dkk10eixyidu3" path="res://scrpcts/node_2d.gd" id="1_wtcfe"]
+
+[node name="Node2d" type="Node2D" unique_id=1203494968]
+script = ExtResource("1_wtcfe")
+
+[node name="Button" type="Button" parent="." unique_id=61323048]
+offset_left = 544.0
+offset_top = 377.0
+offset_right = 669.4902
+offset_bottom = 457.0
+text = "开始游戏"
+
+[connection signal="button_up" from="Button" to="." method="_on_button_button_up"]
