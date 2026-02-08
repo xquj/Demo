@@ -1,85 +1,76 @@
 extends Sprite3D
 class_name Card_Base
 
-# ===================== 全局通用配置 =====================
+# ===================== 通用配置 =====================
 @export var team_id: int = -1
 @export var area: Area3D
 @export var original_modulate: Color
 
-var is_entered: bool = false
-var is_clicked: bool = false
-var move_ability: bool = true
+var is_entered := false
+var is_clicked := false
+var move_ability := true
 
-# ===================== 卡牌基本属性 =====================
+# ===================== 卡牌属性 =====================
 var selling_price: Array[ItemDate] = []
 var family_name: String
 var family_texture: Texture2D
 
-enum Type {
-	Immediately,
-	Permanent,
-	Initiative
-}
+enum Type { Immediately, Permanent, Initiative }
 var skill_type: Type = Type.Immediately
 var card_name: String
-var cost: int = 0
+var cost := 0
 var skill: String
 
-# ===================== 运动状态 =====================
-var start_pos: Vector3 = Vector3.ZERO
-var target_pos: Vector3 = Vector3.ZERO
-var start_rotation: Vector3 = Vector3.ZERO
-var elapsed_time: float = 0.0
-var move_duration: float = 1.0
-var peak_height: Vector3 = Vector3(0, 0.5, 0)
-var target_x_rotate: float = 0.0
-var target_y_rotate: float = 0.0
-var target_z_rotate: float = 0.0
+# ===================== 运动与动画 =====================
+var start_pos := Vector3.ZERO
+var target_pos := Vector3.ZERO
+var start_rotation := Vector3.ZERO
+var elapsed_time := 0.0
+var move_duration := 1.0
+var peak_height := Vector3(0, 0.5, 0)
+var target_x_rotate := 0.0
+var target_y_rotate := 0.0
+var target_z_rotate := 0.0
 
-# ===================== 动画效果 =====================
 var colorAnimation: ColorAnimationUtils
 
-# ===================== 性能优化缓存 =====================
-var _cached_player: PlayerEntity = null
-var _cached_player_team_id: int = -1
-var _idle_wobble_time: float = 0.0
-var _idle_breathe_time: float = 0.0
-var _rest_rotation: Vector3 = Vector3.ZERO
-var _rest_position: Vector3 = Vector3.ZERO
+# ===================== 缓存与静止状态 =====================
+var _cached_player: PlayerEntity
+var _cached_player_team_id := -1
+var _idle_wobble_time := 0.0
+var _idle_breathe_time := 0.0
+var _rest_rotation := Vector3.ZERO
+var _rest_position := Vector3.ZERO
 
-# ===================== 常量定义 =====================
-const PARABOLA_MULTIPLIER: float = 4.0
-const SELECTED_COLOR: Color = Color(0.627, 0.627, 0.627, 1.0)
-const COLOR_ANIM_DURATION: int = 100
-const Y_OFFSET_SELECTED: float = 0.02
+# ===================== 常量 =====================
+const PARABOLA_MULTIPLIER := 4.0
+const SELECTED_COLOR := Color(0.627, 0.627, 0.627, 1.0)
+const COLOR_ANIM_DURATION := 100
+const Y_OFFSET_SELECTED := 0.02
+const IDLE_WOBBLE_SPEED := 2.4
+const IDLE_WOBBLE_DEGREES := Vector3(2.0, 3.0, 0.6)
+const IDLE_BREATHE_SPEED := 1.4
+const IDLE_BREATHE_HEIGHT := 0.008
+const HOVER_LIFT_HEIGHT := 0.015
+const EASE_IN_OUT_EXPONENT := 2.0
+const HAND_FAN_MAX_DEGREES := 18.0
+const HAND_FAN_RADIUS := 0.9
+const HAND_FAN_Y_OFFSET := -0.55
 
-const IDLE_WOBBLE_SPEED: float = 2.4
-const IDLE_WOBBLE_DEGREES: Vector3 = Vector3(2.0, 3.0, 0.6)
-const IDLE_BREATHE_SPEED: float = 1.4
-const IDLE_BREATHE_HEIGHT: float = 0.008
-const HOVER_LIFT_HEIGHT: float = 0.015
-const EASE_IN_OUT_EXPONENT: float = 2.0
-
-const HAND_FAN_MAX_DEGREES: float = 18.0
-const HAND_FAN_RADIUS: float = 0.9
-const HAND_FAN_Y_OFFSET: float = -0.55
-
-# ===================== 卡牌状态机制 =====================
-enum States {
-	DEALING,
-	SELECTING,
-	WAITING,
-	DISCARD,
-	TO_HELD,
-	HELD,
-	TO_SHOWING,
-	SHOWING,
-	TO_ACTIVATE
-}
+# ===================== 状态 =====================
+enum States { DEALING, SELECTING, WAITING, DISCARD, TO_HELD, HELD, TO_SHOWING, SHOWING, TO_ACTIVATE }
 var state: States = States.DEALING
-var pre_round: int = -999
+var pre_round := -999
 
 func _ready() -> void:
+	_setup_area()
+	_setup_color_animation()
+	_rest_rotation = rotation
+	_rest_position = global_position
+	area.visible = false
+	init()
+
+func _setup_area() -> void:
 	if area == null:
 		for child in get_children():
 			if child is Area3D:
@@ -87,48 +78,42 @@ func _ready() -> void:
 	area.mouse_entered.connect(func(): mouse_entered(true))
 	area.mouse_exited.connect(func(): mouse_entered(false))
 
+func _setup_color_animation() -> void:
 	colorAnimation = ColorAnimationUtils.new(modulate, modulate, COLOR_ANIM_DURATION)
 	colorAnimation.play(true)
 	original_modulate = modulate
-	_rest_rotation = rotation
-	_rest_position = global_position
-
-	area.visible = false
-	init()
 
 func _process(delta: float) -> void:
 	if not visible:
 		return
+	_update_color(delta)
+	_update_state(delta)
+	_update_idle(delta)
 
+func _update_color(delta: float) -> void:
 	colorAnimation.update(delta)
 	modulate = colorAnimation.value
 	_update_color_highlight()
 
-	_update_state(delta)
-	_update_idle_motion(delta)
-
 func _update_state(delta: float) -> void:
 	match state:
 		States.DEALING:
-			if move_ability and _process_full_movement(delta):
+			if move_ability and _step_full_movement(delta):
 				switch_state(States.SELECTING)
 		States.SELECTING:
 			if move_ability:
 				var player = _get_cached_player()
 				if player != null:
-					if player.team_id == global.local_player.team_id:
-						target_pos = global.WAIT_Area1_Label.global_position
-					else:
-						target_pos = global.WAIT_Area2_Label.global_position
+					target_pos = global.WAIT_Area1_Label.global_position if player.team_id == global.local_player.team_id else global.WAIT_Area2_Label.global_position
 					var idx = player.waitingGroup.find(self)
 					target_pos.x += 0.5 + idx * 0.3
-					if _process_full_movement(delta):
+					if _step_full_movement(delta):
 						switch_state(States.WAITING)
 		States.WAITING:
-			if move_ability and _process_axis_movement(delta, false, false, true):
+			if move_ability and _step_axis_movement(delta, false, false, true):
 				_finalize_y_movement()
 		States.DISCARD:
-			if move_ability and _process_full_movement(delta):
+			if move_ability and _step_full_movement(delta):
 				move_ability = false
 				var player = _get_cached_player()
 				if player != null:
@@ -137,30 +122,30 @@ func _update_state(delta: float) -> void:
 		States.TO_HELD:
 			if move_ability:
 				var player = _get_cached_player()
-				if player != null and _process_full_movement(delta):
+				if player != null and _step_full_movement(delta):
 					switch_state(States.HELD)
 		States.HELD:
-			if move_ability and _process_axis_movement(delta, false, false, true):
+			if move_ability and _step_axis_movement(delta, false, false, true):
 				_finalize_y_movement()
 		States.TO_SHOWING:
 			if move_ability:
 				var player = _get_cached_player()
-				if player != null and _process_full_movement(delta):
+				if player != null and _step_full_movement(delta):
 					switch_state(States.SHOWING)
 		States.SHOWING:
 			if move_ability:
-				if _process_axis_movement(delta, false, false, true):
+				if _step_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 			elif can_take_effect():
 				switch_state(States.TO_ACTIVATE)
 		States.TO_ACTIVATE:
 			if move_ability:
-				if _process_axis_movement(delta, false, false, true):
+				if _step_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 			elif !can_take_effect():
 				switch_state(States.SHOWING)
 
-func _update_idle_motion(delta: float) -> void:
+func _update_idle(delta: float) -> void:
 	if move_ability:
 		return
 	if _should_idle_wobble():
@@ -180,21 +165,20 @@ func _input(event: InputEvent) -> void:
 			is_clicked = false
 			match state:
 				States.SELECTING:
-					if is_entered:
-						if global.current_state == global.GameState.SELECTING and global.player_activity != null and !move_ability:
-							move_ability = true
-							team_id = global.player_activity.team_id
-							_set_color_animation(original_modulate)
-							global.player_activity.waitingGroup.push_back(self)
-							var select_idx = global.selectGroup.find(self)
-							if select_idx >= 0:
-								global.selectGroup.remove_at(select_idx)
-							global.round += 1
-							if team_id == 1:
-								target_pos.z = 0.5
-							else:
-								target_y_rotate = 180
-								target_pos.z = -0.5
+					if is_entered and global.current_state == global.GameState.SELECTING and global.player_activity != null and !move_ability:
+						move_ability = true
+						team_id = global.player_activity.team_id
+						_set_color_animation(original_modulate)
+						global.player_activity.waitingGroup.push_back(self)
+						var select_idx = global.selectGroup.find(self)
+						if select_idx >= 0:
+							global.selectGroup.remove_at(select_idx)
+						global.round += 1
+						if team_id == 1:
+							target_pos.z = 0.5
+						else:
+							target_y_rotate = 180
+							target_pos.z = -0.5
 				States.WAITING:
 					if is_entered:
 						var pos = target_pos
@@ -222,10 +206,7 @@ func _input(event: InputEvent) -> void:
 
 func mouse_entered(on: bool) -> void:
 	is_entered = on
-	if on:
-		_set_color_animation(SELECTED_COLOR)
-	else:
-		_set_color_animation(original_modulate)
+	_set_color_animation(SELECTED_COLOR if on else original_modulate)
 
 func init() -> void:
 	match state:
@@ -267,7 +248,7 @@ func _update_movement_progress(delta: float) -> float:
 	elapsed_time = minf(elapsed_time + delta, move_duration)
 	return elapsed_time / move_duration
 
-func _process_full_movement(delta: float) -> bool:
+func _step_full_movement(delta: float) -> bool:
 	var progress = _update_movement_progress(delta)
 	var eased_progress = _ease_in_out(progress)
 	_apply_3d_movement(eased_progress)
@@ -277,7 +258,7 @@ func _process_full_movement(delta: float) -> bool:
 		return true
 	return false
 
-func _process_axis_movement(delta: float, update_x: bool, update_z: bool, update_y: bool) -> bool:
+func _step_axis_movement(delta: float, update_x: bool, update_z: bool, update_y: bool) -> bool:
 	var progress = _update_movement_progress(delta)
 	var eased_progress = _ease_in_out(progress)
 	_apply_3d_movement(eased_progress, update_x, update_z, update_y)
@@ -285,7 +266,7 @@ func _process_axis_movement(delta: float, update_x: bool, update_z: bool, update
 
 func _finalize_y_movement() -> void:
 	global_position = target_pos
-	var temp: Vector3 = target_pos
+	var temp = target_pos
 	target_pos = start_pos
 	start_pos = temp
 	_rest_rotation = rotation
@@ -412,8 +393,7 @@ func _init_to_held_state() -> void:
 	_set_color_animation(original_modulate)
 	start_rotation = rotation
 	start_pos = global_position
-	var hand_pos = _get_hand_fan_position(player)
-	target_pos = hand_pos
+	target_pos = _get_hand_fan_position(player)
 	move_ability = true
 	elapsed_time = 0.0
 
@@ -423,8 +403,7 @@ func _init_held_state() -> void:
 	var player = _get_cached_player()
 	if player != null:
 		player.can_combo = true
-		var hand_pos = _get_hand_fan_position(player)
-		target_pos = hand_pos
+		target_pos = _get_hand_fan_position(player)
 		start_pos = global_position
 		move_ability = true
 		elapsed_time = 0.0
@@ -458,7 +437,7 @@ func _init_showing_state() -> void:
 	start_pos = global_position
 	move_duration = 0.1
 	target_pos.x = global.Showing_Area_Label.global_position.x + 0.005
-	peak_height = Vector3(0, 0, 0)
+	peak_height = Vector3.ZERO
 	move_ability = true
 	elapsed_time = 0.0
 
@@ -471,24 +450,18 @@ func _init_to_activate_state() -> void:
 	target_x_rotate = 0.0
 	target_y_rotate = 0.0
 	target_z_rotate = 0.0
-	peak_height = Vector3(0, 0, 0)
+	peak_height = Vector3.ZERO
 	move_ability = true
 	elapsed_time = 0.0
 
 func _apply_3d_movement(progress: float, update_x: bool = true, update_z: bool = true, update_y: bool = true) -> void:
 	var parabola_factor = PARABOLA_MULTIPLIER * progress * (1.0 - progress)
 	if update_x:
-		var linear_x = lerp(start_pos.x, target_pos.x, progress)
-		var parabola_x = parabola_factor * peak_height.x
-		global_position.x = linear_x + parabola_x
+		global_position.x = lerp(start_pos.x, target_pos.x, progress) + parabola_factor * peak_height.x
 	if update_z:
-		var linear_z = lerp(start_pos.z, target_pos.z, progress)
-		var parabola_z = parabola_factor * peak_height.z
-		global_position.z = linear_z + parabola_z
+		global_position.z = lerp(start_pos.z, target_pos.z, progress) + parabola_factor * peak_height.z
 	if update_y:
-		var linear_y = lerp(start_pos.y, target_pos.y, progress)
-		var parabola_y = parabola_factor * peak_height.y
-		global_position.y = linear_y + parabola_y
+		global_position.y = lerp(start_pos.y, target_pos.y, progress) + parabola_factor * peak_height.y
 
 func _apply_3d_rotation(progress: float) -> Vector3:
 	var target_x_rot = start_rotation.x + deg_to_rad(target_x_rotate)
@@ -501,9 +474,7 @@ func _apply_3d_rotation(progress: float) -> Vector3:
 
 func _finalize_movement(target_rot: Vector3) -> void:
 	global_position = target_pos
-	rotation.x = target_rot.x
-	rotation.y = target_rot.y
-	rotation.z = target_rot.z
+	rotation = target_rot
 	_rest_rotation = rotation
 	_rest_position = global_position
 
@@ -521,11 +492,7 @@ func _clear_player_cache() -> void:
 	_cached_player_team_id = -1
 
 func _get_hand_fan_position(player: PlayerEntity) -> Vector3:
-	var held_pos: Vector3
-	if team_id == global.local_player.team_id:
-		held_pos = global.HELD_Area1_Label.global_position
-	else:
-		held_pos = global.HELD_Area2_Label.global_position
+	var held_pos = global.HELD_Area1_Label.global_position if team_id == global.local_player.team_id else global.HELD_Area2_Label.global_position
 	var count = max(1, player.hand_cards.size())
 	var idx = player.hand_cards.find(self)
 	var center = float(count - 1) / 2.0
@@ -544,17 +511,15 @@ func _get_hand_fan_position(player: PlayerEntity) -> Vector3:
 	return held_pos + fan_offset
 
 func _should_idle_wobble() -> bool:
-	return state in [States.WAITING, States.HELD, States.SHOWING, States.TO_ACTIVATE] \
-		and (is_entered or global.selectedCard == self)
+	return state in [States.WAITING, States.HELD, States.SHOWING, States.TO_ACTIVATE] and (is_entered or global.selectedCard == self)
 
 func _apply_idle_wobble(delta: float) -> void:
 	_idle_wobble_time += delta
 	_idle_breathe_time += delta
-	var speed = IDLE_WOBBLE_SPEED
 	var wobble = Vector3(
-		sin(_idle_wobble_time * speed) * deg_to_rad(IDLE_WOBBLE_DEGREES.x),
-		cos(_idle_wobble_time * speed * 0.9) * deg_to_rad(IDLE_WOBBLE_DEGREES.y),
-		sin(_idle_wobble_time * speed * 1.1) * deg_to_rad(IDLE_WOBBLE_DEGREES.z)
+		sin(_idle_wobble_time * IDLE_WOBBLE_SPEED) * deg_to_rad(IDLE_WOBBLE_DEGREES.x),
+		cos(_idle_wobble_time * IDLE_WOBBLE_SPEED * 0.9) * deg_to_rad(IDLE_WOBBLE_DEGREES.y),
+		sin(_idle_wobble_time * IDLE_WOBBLE_SPEED * 1.1) * deg_to_rad(IDLE_WOBBLE_DEGREES.z)
 	)
 	rotation = _rest_rotation + wobble
 	var breathe_offset = sin(_idle_breathe_time * IDLE_BREATHE_SPEED) * IDLE_BREATHE_HEIGHT
