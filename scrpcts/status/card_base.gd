@@ -61,11 +61,15 @@ var colorAnimation: ColorAnimationUtils
 # ==================== 性能优化缓存 =========================
 var _cached_player: PlayerEntity = null  # 缓存的玩家对象
 var _cached_player_team_id: int = -1     # 缓存的玩家team_id
+var _idle_wobble_time: float = 0.0       # 空闲摆动计时器
+var _rest_rotation: Vector3 = Vector3.ZERO # 记录静止时的基础旋转
 const PARABOLA_MULTIPLIER: float = 4.0   # 抛物线计算常量
 # ==================== 常量定义 =========================
 const SELECTED_COLOR: Color = Color(0.627, 0.627, 0.627, 1.0)  # 选中时的颜色
 const COLOR_ANIM_DURATION: int = 100  # 颜色动画时长
 const Y_OFFSET_SELECTED: float = 0.02  # 选中时Y轴偏移
+const IDLE_WOBBLE_SPEED: float = 2.4   # 空闲摆动速度
+const IDLE_WOBBLE_DEGREES: Vector3 = Vector3(2.0, 3.0, 0.6) # 空闲摆动角度
 
 # TODO: 提取更多魔法数字为常量（如0.3, 0.2, 0.5, 0.1等位置偏移值）
 # ====================== 卡牌状态机制 =========================
@@ -99,6 +103,7 @@ func _ready() -> void:
 	colorAnimation.play(true)
 	# 保存原始颜色，用于后续恢复
 	original_modulate = modulate
+	_rest_rotation = rotation
 	# 初始隐藏碰撞区，发牌完成后显示（避免发牌过程中误触）
 	area.visible = false
 	# 初始化卡牌状态
@@ -124,19 +129,12 @@ func _process(delta: float) -> void:
 		States.DEALING:
 			# 发牌状态：卡牌从卡池飞向选择区域
 			if move_ability:
-				# 计算当前动画进度（0.0到1.0）
-				var progress = _update_movement_progress(delta)
-				# 应用3D移动和旋转动画
-				_apply_3d_movement(progress)
-				var target_rot = _apply_3d_rotation(progress)
 				# 动画完成后切换到选牌状态
-				if progress >= 1.0:
-					_finalize_movement(target_rot)
+				if _process_full_movement(delta):
 					switch_state(States.SELECTING)
 		States.SELECTING:
 			# 选牌状态：卡牌从选择区域移动到玩家等待区域
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				# 获取卡牌所属的玩家对象（使用缓存优化）
 				var player = _get_cached_player()
 				if player != null:
@@ -147,33 +145,22 @@ func _process(delta: float) -> void:
 						target_pos = global.WAIT_Area2_Label.global_position
 					var idx = player.waitingGroup.find(self)
 					target_pos.x += 0.5 + idx * 0.3
-					# 应用3D移动和旋转动画
-					_apply_3d_movement(progress)
-					var target_rot = _apply_3d_rotation(progress)
 					# 动画完成后切换到等待状态
-					if progress >= 1.0:
-						_finalize_movement(target_rot)
+					if _process_full_movement(delta):
 						switch_state(States.WAITING)
 		States.WAITING:
 			# 等待状态：卡牌在等待区域，可以被选中、捕猎或售卖
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
-				_apply_3d_movement(progress, false, false, true)
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if progress >= 1.0:
+				if _process_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 		States.DISCARD:
 			# 丢弃状态：卡牌被售卖后飞向弃牌堆
 			if move_ability:
-				var progress = _update_movement_progress(delta)
-				# 应用3D移动和旋转动画（飞向弃牌堆）
-				_apply_3d_movement(progress)
-				var target_rot = _apply_3d_rotation(progress)
 				# 动画完成后停止移动
-				if progress >= 1.0:
-					_finalize_movement(target_rot)
+				if _process_full_movement(delta):
 					move_ability = false
 					var player = _get_cached_player()
 					player.can_combo = true
@@ -181,61 +168,49 @@ func _process(delta: float) -> void:
 		States.TO_HELD:
 			# 到手牌状态（过渡）：卡牌从等待区域移动到玩家手牌区域
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				var player = _get_cached_player()
 				if player != null:
-					# 应用3D移动和旋转动画
-					_apply_3d_movement(progress)
-					var target_rot = _apply_3d_rotation(progress)
 					# 动画完成后切换到手持状态
-					if progress >= 1.0:
-						_finalize_movement(target_rot)
+					if _process_full_movement(delta):
 						switch_state(States.HELD)
 		States.HELD:
 			# 手持状态：卡牌在玩家手牌区域，可以被选中用于连招
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if progress >= 1.0:
+				if _process_axis_movement(delta, true, false, false):
 					_finalize_y_movement()
 		States.TO_SHOWING:
 			# 到展示牌状态（过渡）：卡牌从手牌区域移动到玩家展示区域
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				var player = _get_cached_player()
 				if player != null:
-					# 应用3D移动和旋转动画
-					_apply_3d_movement(progress)
-					var target_rot = _apply_3d_rotation(progress)
 					# 动画完成后切换到手持状态
-					if progress >= 1.0:
-						_finalize_movement(target_rot)
+					if _process_full_movement(delta):
 						switch_state(States.SHOWING)
 		States.SHOWING:
 			# 展示状态：卡牌在玩家展示区域，可以被选中用于连招
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if progress >= 1.0:
+				if _process_axis_movement(delta, true, false, false):
 					_finalize_y_movement()
 			elif can_take_effect():
 				switch_state(States.TO_ACTIVATE)
 		States.TO_ACTIVATE:
 			if move_ability:
-				var progress = _update_movement_progress(delta)
 				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
-				_apply_3d_movement(progress, true, false, false)
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if progress >= 1.0:
+				if _process_axis_movement(delta, true, false, false):
 					_finalize_y_movement()
 			elif !can_take_effect():
 				switch_state(States.SHOWING)
+	
+	# 空闲时增加卡牌轻微摆动，模拟邪恶冥刻风格的手感
+	if !move_ability and _should_idle_wobble():
+		_apply_idle_wobble(delta)
 	
 # ===================== 输入处理（原card_dealing的_input逻辑完全保留） =====================
 # 处理全局输入事件（鼠标点击等）
@@ -369,8 +344,34 @@ func _set_color_animation(target_color: Color) -> void:
 # delta: 上一帧到当前帧的时间间隔（秒）
 # 返回: 动画进度值（0.0表示开始，1.0表示完成）
 func _update_movement_progress(delta: float) -> float:
+	if move_duration <= 0.0:
+		elapsed_time = move_duration
+		return 1.0
 	elapsed_time = minf(elapsed_time + delta, move_duration)
 	return elapsed_time / move_duration
+
+# 处理完整移动和旋转动画（优化：统一移动和旋转逻辑）
+# delta: 上一帧到当前帧的时间间隔（秒）
+# 返回: true表示动画完成
+func _process_full_movement(delta: float) -> bool:
+	var progress = _update_movement_progress(delta)
+	_apply_3d_movement(progress)
+	var target_rot = _apply_3d_rotation(progress)
+	if progress >= 1.0:
+		_finalize_movement(target_rot)
+		return true
+	return false
+
+# 处理仅位移动画（优化：统一轴向浮动逻辑）
+# delta: 上一帧到当前帧的时间间隔（秒）
+# update_x: 是否更新X轴位置
+# update_z: 是否更新Z轴位置
+# update_y: 是否更新Y轴位置
+# 返回: true表示动画完成
+func _process_axis_movement(delta: float, update_x: bool, update_z: bool, update_y: bool) -> bool:
+	var progress = _update_movement_progress(delta)
+	_apply_3d_movement(progress, update_x, update_z, update_y)
+	return progress >= 1.0
 
 # 完成Y轴移动（优化：提取重复的Y轴移动完成逻辑）
 # 完成Y轴浮动动画后，交换起始和目标位置，实现来回浮动的效果
@@ -380,6 +381,7 @@ func _finalize_y_movement() -> void:
 	var temp: Vector3 = target_pos
 	target_pos = start_pos
 	start_pos = temp
+	_rest_rotation = rotation
 	move_ability = false
 
 # 选中卡牌处理（优化：提取重复的选中逻辑）
@@ -624,23 +626,24 @@ func _init_to_activate_state() -> void:
 # update_z: 是否更新Z轴位置
 # update_y: 是否更新Y轴位置（Y轴使用抛物线效果）
 func _apply_3d_movement(progress: float, update_x: bool = true, update_z: bool = true, update_y: bool = true) -> void:
+	var parabola_factor = PARABOLA_MULTIPLIER * progress * (1.0 - progress)
 	if update_x:
 		# X轴线性插值
 		var linear_x = lerp(start_pos.x, target_pos.x, progress)
 		# X轴抛物线效果（使卡牌飞行时有弧线轨迹）
-		var parabola_x = PARABOLA_MULTIPLIER * peak_height.x * progress * (1 - progress)
+		var parabola_x = parabola_factor * peak_height.x
 		global_position.x = linear_x + parabola_x
 	if update_z:
 		# Z轴线性插值
 		var linear_z = lerp(start_pos.z, target_pos.z, progress)
 		# Z轴抛物线效果（使卡牌飞行时有弧线轨迹）
-		var parabola_z = PARABOLA_MULTIPLIER * peak_height.z * progress * (1 - progress)
+		var parabola_z = parabola_factor * peak_height.z
 		global_position.z = linear_z + parabola_z
 	if update_y:
 		# Y轴线性插值
 		var linear_y = lerp(start_pos.y, target_pos.y, progress)
 		# Y轴抛物线效果（使卡牌飞行时有弧线轨迹）
-		var parabola_y = PARABOLA_MULTIPLIER * peak_height.y * progress * (1 - progress)
+		var parabola_y = parabola_factor * peak_height.y
 		global_position.y = linear_y + parabola_y
 
 # 计算并应用3D旋转（优化：提取重复逻辑）
@@ -666,6 +669,7 @@ func _finalize_movement(target_rot: Vector3) -> void:
 	rotation.x = target_rot.x
 	rotation.y = target_rot.y
 	rotation.z = target_rot.z
+	_rest_rotation = rotation
 
 # 获取缓存的玩家对象（优化：避免重复的数组访问和计算）
 # 根据team_id获取对应的玩家对象，使用缓存机制避免重复查找
@@ -685,6 +689,22 @@ func _get_cached_player() -> PlayerEntity:
 func _clear_player_cache() -> void:
 	_cached_player = null
 	_cached_player_team_id = -1
+
+# 空闲摆动条件（邪恶冥刻风格）
+func _should_idle_wobble() -> bool:
+	return state in [States.WAITING, States.HELD, States.SHOWING, States.TO_ACTIVATE] \
+		and (is_entered or global.selectedCard == self)
+
+# 空闲摆动效果（轻微旋转摇摆）
+func _apply_idle_wobble(delta: float) -> void:
+	_idle_wobble_time += delta
+	var speed = IDLE_WOBBLE_SPEED
+	var wobble = Vector3(
+		sin(_idle_wobble_time * speed) * deg_to_rad(IDLE_WOBBLE_DEGREES.x),
+		cos(_idle_wobble_time * speed * 0.9) * deg_to_rad(IDLE_WOBBLE_DEGREES.y),
+		sin(_idle_wobble_time * speed * 1.1) * deg_to_rad(IDLE_WOBBLE_DEGREES.z)
+	)
+	rotation = _rest_rotation + wobble
 
 # 切换状态
 # 切换到新的卡牌状态，并初始化该状态的参数
