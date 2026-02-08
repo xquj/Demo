@@ -180,9 +180,9 @@ func _process(delta: float) -> void:
 			# 手持状态：卡牌在玩家手牌区域，可以被选中用于连招
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if _process_axis_movement(delta, true, false, false):
+				if _process_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 		States.TO_SHOWING:
 			# 到展示牌状态（过渡）：卡牌从手牌区域移动到玩家展示区域
@@ -196,17 +196,17 @@ func _process(delta: float) -> void:
 			# 展示状态：卡牌在玩家展示区域，可以被选中用于连招
 			# 如果被选中，会有Y轴上下浮动的动画效果
 			if move_ability:
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if _process_axis_movement(delta, true, false, false):
+				if _process_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 			elif can_take_effect():
 				switch_state(States.TO_ACTIVATE)
 		States.TO_ACTIVATE:
 			if move_ability:
-				# 只更新X轴位置（上下浮动效果），不更新Y和Z轴
+				# 只更新Y轴位置（上下浮动效果），不更新X和Z轴
 				# 动画完成后交换起始和目标位置，实现来回浮动
-				if _process_axis_movement(delta, true, false, false):
+				if _process_axis_movement(delta, false, false, true):
 					_finalize_y_movement()
 			elif !can_take_effect():
 				switch_state(States.SHOWING)
