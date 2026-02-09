@@ -29,9 +29,10 @@ var base_position: Vector3
 func _ready() -> void:
 	base_scale = scale
 	base_position = global_position
-	area.input_event.connect(_on_area_input_event)
-	area.mouse_entered.connect(func(): _set_hover(true))
-	area.mouse_exited.connect(func(): _set_hover(false))
+	if area != null:
+		area.input_event.connect(_on_area_input_event)
+		area.mouse_entered.connect(func(): _set_hover(true))
+		area.mouse_exited.connect(func(): _set_hover(false))
 
 func setup(card_data: Dictionary, owner_state, manager_ref) -> void:
 	data = card_data

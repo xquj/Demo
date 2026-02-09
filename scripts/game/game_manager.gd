@@ -45,6 +45,17 @@ var scale_value := 0
 var selected_card: Card3D = null
 
 func _ready() -> void:
+	if card_scene == null:
+		push_error("GameManager requires a card_scene to be assigned.")
+		return
+	if player_slots_root == null or enemy_slots_root == null:
+		push_error("GameManager missing board slot roots.")
+		return
+	if player_hand_anchor == null or enemy_hand_anchor == null:
+		push_error("GameManager missing hand anchors.")
+		return
+	if camera_fsm == null:
+		push_warning("CameraRig missing; continuing without camera transitions.")
 	card_db.load_cards()
 	player_state.board = [null, null, null, null]
 	enemy_state.board = [null, null, null, null]
@@ -65,8 +76,10 @@ func _setup_slots() -> void:
 			slot.hover_changed.connect(_on_slot_hover)
 
 func _setup_ui() -> void:
-	ui_end_turn.pressed.connect(_on_end_turn_pressed)
-	ui_inspect_panel.visible = false
+	if ui_end_turn != null:
+		ui_end_turn.pressed.connect(_on_end_turn_pressed)
+	if ui_inspect_panel != null:
+		ui_inspect_panel.visible = false
 	_update_ui()
 
 func _build_decks() -> void:
@@ -85,7 +98,8 @@ func start_turn(player) -> void:
 	active_player = player
 	inactive_player = enemy_state if player == player_state else player_state
 	phase = "draw"
-	camera_fsm.go_to_state(CameraFSM.CameraState.TURN_PULLBACK)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.TURN_PULLBACK)
 	_update_ui()
 	_on_turn_start()
 
@@ -94,7 +108,8 @@ func _on_turn_start() -> void:
 	draw_card(active_player)
 	_trigger_abilities("on_turn_start", active_player)
 	phase = "play"
-	camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
 	if not active_player.is_player:
 		_run_enemy_turn()
 	_update_ui()
@@ -148,18 +163,24 @@ func _on_card_clicked(card: Card3D) -> void:
 		return
 	selected_card = card
 	_highlight_slots(true)
-	camera_fsm.go_to_state(CameraFSM.CameraState.CARD_CLOSEUP)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.CARD_CLOSEUP)
 
 func _on_card_hover(card: Card3D, hovered: bool) -> void:
 	if hovered:
-		ui_inspect_panel.visible = true
-		ui_inspect_label.text = _format_card_description(card)
+		if ui_inspect_panel != null:
+			ui_inspect_panel.visible = true
+		if ui_inspect_label != null:
+			ui_inspect_label.text = _format_card_description(card)
 		if card.zone == "hand":
-			camera_fsm.go_to_state(CameraFSM.CameraState.CARD_CLOSEUP)
+			if camera_fsm != null:
+				camera_fsm.go_to_state(CameraFSM.CameraState.CARD_CLOSEUP)
 	else:
-		ui_inspect_panel.visible = false
+		if ui_inspect_panel != null:
+			ui_inspect_panel.visible = false
 		if phase == "play":
-			camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
+			if camera_fsm != null:
+				camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
 
 func _format_card_description(card: Card3D) -> String:
 	var sigils := ", ".join(card.data.get("sigils", []))
@@ -319,12 +340,14 @@ func _on_end_turn_pressed() -> void:
 
 func _end_turn() -> void:
 	phase = "combat"
-	camera_fsm.go_to_state(CameraFSM.CameraState.SCALE_FOCUS)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.SCALE_FOCUS)
 	_resolve_combat()
 	phase = "end"
 	if _check_win():
 		return
-	camera_fsm.go_to_state(CameraFSM.CameraState.BASE)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.BASE)
 	start_turn(inactive_player)
 
 func _resolve_combat() -> void:
@@ -365,7 +388,8 @@ func apply_scale_damage(attacker, amount: int, is_spell: bool) -> void:
 	else:
 		scale_value -= amount
 	scale_value = clamp(scale_value, -SCALE_THRESHOLD, SCALE_THRESHOLD)
-	camera_fsm.go_to_state(CameraFSM.CameraState.DAMAGE_TILT)
+	if camera_fsm != null:
+		camera_fsm.go_to_state(CameraFSM.CameraState.DAMAGE_TILT)
 	_update_ui()
 
 func spawn_rattle_token(dead_card: Card3D) -> void:
@@ -407,22 +431,31 @@ func _highlight_slots(active: bool) -> void:
 			slot.set_highlight(active and active_player.board[slot.lane_index] == null)
 
 func _update_ui() -> void:
-	ui_phase_label.text = "Phase: %s" % phase.capitalize()
-	ui_turn_label.text = "Turn: %s" % (active_player.name if active_player != null else "--")
-	ui_scale_bar.value = scale_value
-	ui_scale_label.text = "Balance: %d" % scale_value
-	ui_bones_label.text = "Bones: %d" % player_state.bones
+	if ui_phase_label != null:
+		ui_phase_label.text = "Phase: %s" % phase.capitalize()
+	if ui_turn_label != null:
+		ui_turn_label.text = "Turn: %s" % (active_player.name if active_player != null else "--")
+	if ui_scale_bar != null:
+		ui_scale_bar.value = scale_value
+	if ui_scale_label != null:
+		ui_scale_label.text = "Balance: %d" % scale_value
+	if ui_bones_label != null:
+		ui_bones_label.text = "Bones: %d" % player_state.bones
 
 func _check_win() -> bool:
 	if scale_value >= SCALE_THRESHOLD:
-		ui_phase_label.text = "Victory!"
+		if ui_phase_label != null:
+			ui_phase_label.text = "Victory!"
 		phase = "finished"
-		ui_end_turn.disabled = true
+		if ui_end_turn != null:
+			ui_end_turn.disabled = true
 		return true
 	elif scale_value <= -SCALE_THRESHOLD:
-		ui_phase_label.text = "Defeat!"
+		if ui_phase_label != null:
+			ui_phase_label.text = "Defeat!"
 		phase = "finished"
-		ui_end_turn.disabled = true
+		if ui_end_turn != null:
+			ui_end_turn.disabled = true
 		return true
 	return false
 
@@ -431,7 +464,7 @@ func _run_enemy_turn() -> void:
 	var playable := true
 	while playable:
 		playable = false
-		for card in enemy_state.hand:
+		for card in enemy_state.hand.duplicate():
 			if card.is_spell() and _can_afford(card, enemy_state):
 				_play_enemy_spell(card)
 				playable = true
@@ -470,4 +503,5 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_cancel"):
 		selected_card = null
 		_highlight_slots(false)
-		camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
+		if camera_fsm != null:
+			camera_fsm.go_to_state(CameraFSM.CameraState.PUSH_IN)
