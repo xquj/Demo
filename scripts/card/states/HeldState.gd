@@ -14,6 +14,10 @@ const HOVER_FORWARD: float = 0.02
 const HOVER_ROT_DEG: float = 0.005
 const HOVER_DURATION: float = 0.12
 const FAN_SPREAD_DEG: float = 14.0
+const FAN_SPREAD_MIN_DEG: float = 6.0
+const FAN_SHRINK_START_COUNT: int = 6
+const FAN_SHRINK_STEP_DEG: float = 1.0
+const FAN_CURVE_OUT: float = 0.03
 
 func enter() -> void:
 	super.enter()
@@ -30,6 +34,10 @@ func enter() -> void:
 	base_pos = card.global_position
 	base_rot = card.rotation
 	base_bottom_local_pos = _get_bottom_anchor_pos(base_local_pos, card.transform.basis)
+	if card.player != null and card.team_id == global.local_player.team_id:
+		if !card.player.hand_fan_center_initialized:
+			card.player.hand_fan_center_local = base_bottom_local_pos
+			card.player.hand_fan_center_initialized = true
 	
 func exit() -> void:
 	super.exit()
@@ -81,15 +89,24 @@ func _update_hand_layout() -> void:
 	var index: int = hand_cards.find(card)
 	if index == -1:
 		return
+	var shrink_steps: int = max(0, count - FAN_SHRINK_START_COUNT)
+	var spread_deg: float = max(FAN_SPREAD_MIN_DEG, FAN_SPREAD_DEG - float(shrink_steps) * FAN_SHRINK_STEP_DEG)
 	var t: float = 0.5
 	if count > 1:
 		t = float(index) / float(count - 1)
-	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
+	var angle_deg: float = lerp(-spread_deg * 0.5, spread_deg * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
 	base_rot.z = -angle_rad
-	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
+	var basis: Basis = Basis.from_euler(base_rot)
+	var new_up: Vector3 = basis.y.normalized()
+	var forward_dir: Vector3 = -basis.z.normalized()
 	var half_height: float = _get_half_height()
-	base_local_pos = base_bottom_local_pos + new_up * half_height
+	var fan_center: Vector3 = base_bottom_local_pos
+	if card.player.hand_fan_center_initialized:
+		fan_center = card.player.hand_fan_center_local
+	var curve_t: float = 1.0 - abs(2.0 * t - 1.0)
+	var curve_offset: float = FAN_CURVE_OUT * curve_t * curve_t
+	base_local_pos = fan_center + new_up * half_height + forward_dir * curve_offset
 	base_pos = _get_parent_global_pos(base_local_pos)
 	if !is_entered and !card.moving_ablity:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
