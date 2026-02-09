@@ -7,9 +7,9 @@ const SCALE_THRESHOLD := 10
 class PlayerState:
 	var name: String
 	var is_player: bool
-	var deck: Array = []
-	var hand: Array = []
-	var board: Array = []
+	var deck: Array[Dictionary] = []
+	var hand: Array[Card3D] = []
+	var board: Array[Card3D] = []
 	var bones: int = 0
 
 	func _init(name_: String, is_player_: bool) -> void:
