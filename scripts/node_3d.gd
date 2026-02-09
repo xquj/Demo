@@ -114,9 +114,7 @@ func _process(delta: float) -> void:
 				global.Cube_Desk.global_rotation.z = 0
 	tick+=1
 
-
-	
-	
+		
 func initialize_card(sprite: Sprite3D) -> void:
 	# 优化：缓存路径替换结果
 	sprite.set_script(load("res://scripts/card/card_base.gd"))
@@ -149,3 +147,5 @@ func _on_tame_button_up() -> void:
 				card.switch_state(card.States.TO_HELD)
 				global.selectedCard = null
 				
+func _hover(m_x:float,m_y:float,x:float,y:float,x1:float,y1:float) -> bool:
+	return m_x >= x and m_x <= x1 and m_y >= y and m_y <= y1

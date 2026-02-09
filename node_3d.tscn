@@ -64,11 +64,11 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0
 
 [node name="LPlayer" type="CharacterBody3D" parent="." unique_id=44332185]
 physics_interpolation_mode = 2
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -0.004, 0)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -0.004, 0.0050066113)
 script = ExtResource("2_i5arm")
 
 [node name="SpringArm3D" type="SpringArm3D" parent="LPlayer" unique_id=525352436]
-transform = Transform3D(1, 0, 0, 0, 0.70710677, -0.70710677, 0, 0.70710677, 0.70710677, 0, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 0.7071067, -0.7071067, 0, 0.7071067, 0.7071067, 0, 0, 0)
 script = ExtResource("2_noarx")
 
 [node name="Camera3D" type="Camera3D" parent="LPlayer/SpringArm3D" unique_id=945114509]
@@ -78,6 +78,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)
 
 [node name="hestia" type="Sprite3D" parent="cards" unique_id=159389927]
 transform = Transform3D(0.9999999, 0, 0, 0, -4.371139e-08, 0.9999997, 0, -1, -4.3711374e-08, -0.62, 0.067193896, 0)
+visible = false
 pixel_size = 0.0001
 transparent = false
 shaded = true
@@ -169,6 +170,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
 mesh = SubResource("BoxMesh_tuemg")
 
 [node name="Interactive" type="Node3D" parent="Scene3D/Desk" unique_id=2080865381]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0050066113)
 
 [node name="EndWatting" type="MeshInstance3D" parent="Scene3D/Desk/Interactive" unique_id=1700010487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7945567, 1.5419137, 0.37455297)
@@ -191,7 +193,7 @@ script = ExtResource("9_4arys")
 shape = SubResource("BoxShape3D_4arys")
 
 [node name="deck" type="Sprite3D" parent="Scene3D/Desk" unique_id=2088461718]
-transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.3711378e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -0.61900973, 1.5591071, 0)
+transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.3711378e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -0.61900973, 1.5591071, 0.0050066113)
 pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
@@ -206,21 +208,21 @@ transform = Transform3D(0.176, 2.18557e-09, -4.585646e-16, 0, -2.1855693e-09, -0
 shape = SubResource("BoxShape3D_jsk3o")
 
 [node name="WaitArea1" type="Label3D" parent="Scene3D/Desk" unique_id=308259907]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.523, 1.5078853, 0.4)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.523, 1.5078853, 0.4050066)
 text = "待选区域"
 font_size = 18
 
 [node name="WaitArea2" type="Label3D" parent="Scene3D/Desk" unique_id=1610134510]
-transform = Transform3D(-1, 8.742278e-08, 3.5527137e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -0.523, 1.5078853, -0.4)
+transform = Transform3D(-1, 8.742278e-08, 3.5527137e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -0.523, 1.5078853, -0.3949934)
 text = "待选区域"
 font_size = 18
 
 [node name="ShowArea" type="Label3D" parent="Scene3D/Desk" unique_id=1862997443]
-transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.51, 0, -0.015)
+transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.51, 0, -0.009993374)
 font_size = 18
 
 [node name="discardPile" type="Sprite3D" parent="Scene3D/Desk" unique_id=1565670416]
-transform = Transform3D(-3.5527137e-15, 1.910685e-15, 0.9999997, -0.9999999, -8.35187e-23, 7.1054274e-15, 0, -0.9999997, 1.9106848e-15, 1.5265927, -0.8580466, 0)
+transform = Transform3D(-3.5527137e-15, 1.910685e-15, 0.9999997, -0.9999999, -8.35187e-23, 7.1054274e-15, 0, -0.9999997, 1.9106848e-15, 1.5265927, -0.85804653, 0.0050066113)
 pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
@@ -235,7 +237,7 @@ transform = Transform3D(0.176, 1.5298984e-09, -4.5856447e-16, 0, -1.5298985e-09,
 shape = SubResource("BoxShape3D_wc5p8")
 
 [node name="HeldArea1" type="Label3D" parent="Scene3D/Desk" unique_id=275769799]
-transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.508, 0.714, 0.45)
+transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.508, 0.714, 0.45500666)
 text = "手牌区域"
 font_size = 18
 
@@ -246,7 +248,7 @@ font_size = 12
 outline_size = 4
 
 [node name="HeldArea2" type="Label3D" parent="Scene3D/Desk" unique_id=1775729088]
-transform = Transform3D(4.371139e-08, -4.3711392e-08, 1, 1, -8.7422784e-08, -4.3711392e-08, 8.742278e-08, 1, 4.371139e-08, 1.508, 0.714, -0.45)
+transform = Transform3D(4.371139e-08, -4.3711392e-08, 1, 1, -8.7422784e-08, -4.3711392e-08, 8.742278e-08, 1, 4.371139e-08, 1.508, 0.714, -0.44499338)
 text = "手牌区域"
 font_size = 18
 

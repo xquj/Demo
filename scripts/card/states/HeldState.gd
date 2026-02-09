@@ -84,6 +84,10 @@ func _update_hand_layout() -> void:
 	var t: float = 0.5
 	if count > 1:
 		t = float(index) / float(count - 1)
+	var idx: int = card.player.hand_cards.find(card) + 1
+	var size_: int = card.player.hand_cards.size() / 2
+	var offset: float = 0.1 / maxf(((size_ * 2.0) / 8.0),1.0)
+	base_bottom_local_pos.x = global.camera.global_position.x - (size_ - idx + 1) * offset
 	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
 	base_rot.z = -angle_rad
@@ -93,7 +97,7 @@ func _update_hand_layout() -> void:
 	base_pos = _get_parent_global_pos(base_local_pos)
 	if !is_entered and !card.moving_ablity:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
-			_move_with_rotation(base_pos, base_rot, 0.0, 0.0, MoveMode.LINEAR, 1.0)
+			_move_with_rotation(base_pos, base_rot, 0.1, 0.0, MoveMode.LINEAR, 1.0)
 
 func _get_half_height() -> float:
 	if card == null or card.texture == null:

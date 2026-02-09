@@ -30,10 +30,12 @@ var duration: float
 var elapsed: float
 #Other
 var original_modulate: Color
+var original_scale: Vector3
 
 func _ready() -> void:
 	team_id = -1
 	player = null
+	original_scale = scale
 	original_modulate = modulate
 	color_animation = ColorAnimationUtils.new(modulate,modulate,0)
 	rotation = Vector3(deg_to_rad(90),deg_to_rad(90),deg_to_rad(0))
@@ -62,4 +64,5 @@ func set_color(color: Color,dur: int) -> void:
 		color_animation.set_target(color,dur)
 		color_animation.play(true)
 		
+	
 		
