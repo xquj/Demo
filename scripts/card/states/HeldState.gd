@@ -40,8 +40,7 @@ func exit() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func update(delta: float) -> void:
 	super.update(delta)
-	if global.spring_rotX_animation.done and global.cube_rot_animation.done:
-		_update_hand_layout()
+	_update_hand_layout()
 
 
 func handle_input(event: InputEvent) -> void:
