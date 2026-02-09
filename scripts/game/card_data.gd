@@ -9,7 +9,7 @@ func load_cards() -> void:
 	if file == null:
 		push_warning("cards.json missing; using empty card database")
 		return
-	var json := JSON.parse_string(file.get_as_text())
+	var json: Variant = JSON.parse_string(file.get_as_text())
 	if typeof(json) != TYPE_ARRAY:
 		push_warning("cards.json did not parse to an array")
 		return
@@ -20,5 +20,5 @@ func load_cards() -> void:
 func get_card(id: String) -> Dictionary:
 	return cards.get(id, {})
 
-func all_cards() -> Array:
+func all_cards() -> Array[Dictionary]:
 	return cards.values()
