@@ -71,6 +71,8 @@ func _update_hand_layout() -> void:
 		return
 	if card.team_id != global.local_player.team_id:
 		return
+	if is_entered:
+		return
 	var hand_cards: Array = card.player.hand_cards
 	var count: int = hand_cards.size()
 	if count == 0:
@@ -83,6 +85,7 @@ func _update_hand_layout() -> void:
 		t = float(index) / float(count - 1)
 	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
+	base_bottom_pos = _get_bottom_anchor_pos(card.global_position, card.global_transform.basis)
 	base_rot = card.rotation
 	base_rot.z = -angle_rad
 	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
