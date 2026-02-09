@@ -16,7 +16,7 @@ func enter() -> void:
 	if area != null:
 		area.mouse_entered.connect(func():mouse_entered(true))
 		area.mouse_exited.connect(func():mouse_entered(false))
-	area.visible = true
+		area.visible = true
 	start_pos = card.global_position
 	
 func exit() -> void:
@@ -36,11 +36,12 @@ func handle_input(event: InputEvent) -> void:
 				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
 	
 func mouse_entered(entered: bool) -> void:
-	if card.state != self or !area.visible: return
-	is_entered = entered
-	if entered:
-		card.set_color(Color(0.588, 0.588, 0.588, 1.0),100)
-		_move(Vector3(start_pos.x, start_pos.y + 0.01, start_pos.z),0.1,0,1)
-	else:
-		card.set_color(card.original_modulate,100)
-		_move(Vector3(start_pos.x, start_pos.y, start_pos.z),0.1,0,1)
+	pass
+	#if card.state != self or !area.visible: return
+	#is_entered = entered
+	#if entered:
+		#card.set_color(Color(0.588, 0.588, 0.588, 1.0),100)
+		#_move(Vector3(start_pos.x, start_pos.y + 0.01, start_pos.z),0.1,0,1)
+	#else:
+		#card.set_color(card.original_modulate,100)
+		#_move(Vector3(start_pos.x, start_pos.y, start_pos.z),0.1,0,1)

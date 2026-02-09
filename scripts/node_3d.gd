@@ -14,6 +14,7 @@ func _ready() -> void:
 	global.round = 0
 	global.game_progress = 1
 	global.Deck = $Scene3D/Desk/deck
+	global.MPlayer = $MPlayer
 	global.WAIT_Area1_Label = $Scene3D/Desk/WaitArea1
 	global.WAIT_Area2_Label = $Scene3D/Desk/WaitArea2
 	global.camera = $LPlayer/SpringArm3D/Camera3D

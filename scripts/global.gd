@@ -20,6 +20,7 @@ static var HELD_Area2_Label :Label3D #区域字体
 static var discardPile :Sprite3D #弃牌堆(实体)
 static var Deck :Sprite3D #牌堆(实体)
 static var camera: Camera3D
+static var MPlayer: CharacterBody3D
 static var Cube_Desk: MeshInstance3D
 static var spring_length_animation: AnimationUtils = AnimationUtils.new(0,0,0)
 static var spring_rotX_animation: AnimationUtils = AnimationUtils.new(0,0,0)
