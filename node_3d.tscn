@@ -80,7 +80,7 @@ pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/hestia" unique_id=101593383]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
 visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/hestia/Area3D" unique_id=851639876]
@@ -105,7 +105,7 @@ pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/agni" unique_id=1172157372]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
 visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/agni/Area3D" unique_id=1320489222]
@@ -130,7 +130,7 @@ pixel_size = 0.0001
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/asmodeus" unique_id=447247618]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
 visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/asmodeus/Area3D" unique_id=1939342486]
