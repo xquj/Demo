@@ -6,13 +6,13 @@ var area: Area3D
 var is_entered: bool
 var base_pos: Vector3
 var base_rot: Vector3
+var base_bottom_pos: Vector3
 
 const HOVER_HEIGHT: float = 0.06
 const HOVER_FORWARD: float = 0.08
 const HOVER_ROT_DEG: float = 12.0
 const HOVER_DURATION: float = 0.12
 const FAN_SPREAD_DEG: float = 32.0
-const FAN_REPOSITION_DURATION: float = 0.18
 
 func enter() -> void:
 	super.enter()
@@ -27,6 +27,7 @@ func enter() -> void:
 		area.visible = true
 	base_pos = card.global_position
 	base_rot = card.rotation
+	base_bottom_pos = _get_bottom_anchor_pos(base_pos, card.global_transform.basis)
 	
 func exit() -> void:
 	super.exit()
@@ -38,9 +39,9 @@ func exit() -> void:
 func update(delta: float) -> void:
 	super.update(delta)
 	_update_hand_layout()
-	if !is_entered and _is_move_finished():
-		if card.global_position.distance_to(base_pos) > 0.001 or absf(card.rotation.z - base_rot.z) > 0.001:
-			_move_with_rotation(base_pos, base_rot, FAN_REPOSITION_DURATION, 0.0, MoveMode.LINEAR, 1.0)
+	if !is_entered and !card.moving_ablity:
+		card.global_position = base_pos
+		card.rotation = base_rot
 
 
 func handle_input(event: InputEvent) -> void:
@@ -82,6 +83,16 @@ func _update_hand_layout() -> void:
 		t = float(index) / float(count - 1)
 	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
-	base_pos = card.global_position
 	base_rot = card.rotation
 	base_rot.z = -angle_rad
+	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
+	var half_height: float = _get_half_height()
+	base_pos = base_bottom_pos + new_up * half_height
+
+func _get_half_height() -> float:
+	if card == null or card.texture == null:
+		return 0.0
+	return card.texture.get_size().y * card.pixel_size * card.scale.y * 0.5
+
+func _get_bottom_anchor_pos(center_pos: Vector3, basis: Basis) -> Vector3:
+	return center_pos - basis.y.normalized() * _get_half_height()
