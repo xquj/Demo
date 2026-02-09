@@ -77,6 +77,7 @@ texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/hestia" unique_id=101593383]
 transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, -3.8589576e-11, 0.00088313967)
+visible = false
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="cards/hestia/Area3D" unique_id=851639876]
 transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)

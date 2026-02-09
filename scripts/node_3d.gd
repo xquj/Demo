@@ -30,7 +30,6 @@ func _ready() -> void:
 func _update_player_activity() -> void:
 	var players_size = global.players.size()  # 缓存数组大小
 	var threshold = players_size + global.game_progress - 1
-	
 	for player in global.players:
 		var is_active: bool
 		if global.round < threshold:
@@ -62,9 +61,8 @@ func _process(delta: float) -> void:
 				player.can_combo = true
 			global.round = global.game_progress - 1;
 			if global.selectGroup.size() >= global.players.size() * 2:
-				pass
-				#if !global.selectGroup.back().move_ability:
-				#	global.current_state = global.GameState.SELECTING
+				if !global.selectGroup.back().moving_ablity:
+					global.current_state = global.GameState.SELECTING
 			else:
 				if tick % DEAL_INTERVAL == 0:
 					# 优化：使用缓存的节点引用
@@ -73,7 +71,6 @@ func _process(delta: float) -> void:
 						var source_sprite: Sprite3D = _cached_cards_node.get_child((tick / DEAL_INTERVAL) % cards_count).duplicate()
 						source_sprite.visible = true
 						initialize_card(source_sprite)
-				
 		global.GameState.SELECTING:
 			if global.selectGroup.size() == 0:
 				global.current_state = global.GameState.WAITING
@@ -84,6 +81,8 @@ func _process(delta: float) -> void:
 		global.GameState.WAITING:
 			if rot_animation.done && rot_animation.end_value == 90:
 				global.current_state = global.GameState.COMBOING
+				global.spring_rotX_animation.set_target(45,200)
+				global.spring_rotX_animation.play(true)
 			global.round = global.game_progress - 1;
 			# 优化：使用更高效的方式计算总大小
 			var total_waiting_size: int = 0;
@@ -114,7 +113,6 @@ func _process(delta: float) -> void:
 			for player in global.players:
 				player.process()
 		global.GameState.END:
-
 			if global.round > global.players.size() - 1:
 				if rot_animation.end_value != 0:
 					global.spring_length_animation.set_target(3,200)
@@ -125,8 +123,6 @@ func _process(delta: float) -> void:
 				global.player_activity = global.players.get(global.round)
 			global.Cube_Desk.global_rotation.z = deg_to_rad(rot_animation.value)
 			if rot_animation.done && rot_animation.end_value == 0:
-				global.spring_rotX_animation.set_target(45,200)
-				global.spring_rotX_animation.play(true)
 				global.player_activity = null
 				global.game_progress += 1
 				global.current_state = global.GameState.DEALING

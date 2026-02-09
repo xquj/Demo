@@ -50,8 +50,7 @@ func transition_to(state_script: Script) -> void:
 		return
 	var next_state: State = state_script.new(card)
 	_change_state(next_state)
-	
-#=============================================== 内部 ===========================================================
+
 func _change_state(next_state: State) -> void:
 	# 内部状态切换逻辑
 	if card == null:
@@ -78,6 +77,9 @@ func _process(delta: float) -> void:
 	# 处理移动再进行状态更新
 	_update_movement(delta)
 	update(delta)
+
+func _ready() -> void:
+	pass
 
 func _enter_internal() -> void:
 	# 防止重复进入
@@ -209,6 +211,15 @@ func _finish_move() -> void:
 	card.moving_ablity = false
 	move_rotate_enabled = false
 	move_scale_enabled = false
+
+func _is_move_finished() -> bool:
+	# 移动结束判断（用于状态逻辑查询）
+	# 用法：if _is_move_finished():
+	if card == null:
+		return true
+	if not card.moving_ablity:
+		return true
+	return card.duration > 0.0 and card.elapsed >= card.duration
 
 func _calculate_position(t: float) -> Vector3:
 	# 根据模式计算当前位置

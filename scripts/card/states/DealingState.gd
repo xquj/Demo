@@ -15,7 +15,8 @@ func exit() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func update(delta: float) -> void:
 	super.update(delta)
-
+	if _is_move_finished():
+		transition_to(load("res://scripts/card/states/SelectingState.gd"))
 
 func handle_input(event: InputEvent) -> void:
 	super.handle_input(event)

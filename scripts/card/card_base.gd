@@ -7,8 +7,12 @@ var family_name: String
 var health: int
 var cost: int
 var selling_price: int
-#状态
+var team_id: int
+var player: PlayerEntity
+#状态机
 var state: State
+#动画
+var color_animation: ColorAnimationUtils;
 # 位移相关参数
 var start_pos: Vector3
 var target_pos: Vector3
@@ -24,8 +28,14 @@ var control_pos: Vector3
 var moving_ablity: bool
 var duration: float
 var elapsed: float
+#Other
+var original_modulate: Color
 
 func _ready() -> void:
+	team_id = -1
+	player = null
+	original_modulate = modulate
+	color_animation = ColorAnimationUtils.new(modulate,modulate,0)
 	rotation = Vector3(deg_to_rad(90),deg_to_rad(90),deg_to_rad(0))
 	global_position = global.Deck.global_position
 	start_pos = global_position
@@ -41,6 +51,15 @@ func _ready() -> void:
 	
 func _process(delta: float) -> void:
 	state._process(delta)
+	color_animation.update(delta)
+	modulate = color_animation.value
 	
 func _input(event: InputEvent) -> void:
 	state._input(event)
+
+func set_color(color: Color,dur: int) -> void:
+	if color_animation.end_color != color:
+		color_animation.set_target(color,dur)
+		color_animation.play(true)
+		
+		
