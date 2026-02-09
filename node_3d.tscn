@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://26y3xcr6o70b" path="res://textrue/cards/wyrm_family/agni.png" id="4_jka67"]
 [ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
 [ext_resource type="Texture2D" uid="uid://bs6i4cla8k8oj" path="res://textrue/cards/fire_family/asmodeus.png" id="5_i5arm"]
+[ext_resource type="Script" uid="uid://cy7nlspwfliev" path="res://scripts/interactive/end_watting_button.gd" id="8_jsk3o"]
+[ext_resource type="Script" uid="uid://cycasqqnecjmn" path="res://scripts/interactive/end_combo_button.gd" id="9_4arys"]
 [ext_resource type="Texture2D" uid="uid://d1jm8362lj450" path="res://textrue/cards/fire_family/hestia.png" id="14_3v7ru"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tuemg"]
@@ -33,6 +35,12 @@ glow_enabled = true
 [sub_resource type="BoxMesh" id="BoxMesh_tuemg"]
 material = SubResource("ShaderMaterial_tuemg")
 size = Vector3(3, 3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wc5p8"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_4arys"]
+size = Vector3(0.1, 0.1, 0.1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_a0tk4"]
 
@@ -70,13 +78,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)
 
 [node name="hestia" type="Sprite3D" parent="cards" unique_id=159389927]
 transform = Transform3D(0.9999999, 0, 0, 0, -4.371139e-08, 0.9999997, 0, -1, -4.3711374e-08, -0.62, 0.067193896, 0)
-visible = false
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("14_3v7ru")
 
 [node name="card_back" type="Sprite3D" parent="cards/hestia" unique_id=1596690081]
 transform = Transform3D(1, -2.1316282e-14, -1.0658141e-14, 2.1316282e-14, 0.99999994, -3.5527137e-15, 7.105428e-15, 3.5527137e-15, 1, 0, -1.5641888e-10, -5.184859e-05)
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/hestia" unique_id=101593383]
@@ -97,11 +108,15 @@ shape = SubResource("BoxShape3D_i5arm")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -0.62, 0.067193896, 0)
 visible = false
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("4_jka67")
 
 [node name="card_back" type="Sprite3D" parent="cards/agni" unique_id=1566023626]
 transform = Transform3D(1, 0, 0, 0, 0.99999994, -3.5527137e-15, 0, 0, 1, 0, -4.0139225e-11, -8.172542e-05)
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/agni" unique_id=1172157372]
@@ -122,11 +137,15 @@ shape = SubResource("BoxShape3D_i5arm")
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -0.62, 0.067193896, 0)
 visible = false
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("5_i5arm")
 
 [node name="card_back" type="Sprite3D" parent="cards/asmodeus" unique_id=1491841671]
 transform = Transform3D(1, 0, 0, 0, 0.99999994, -7.1054274e-15, 0, 0, 1, 0, -4.2014392e-11, -3.8824975e-05)
 pixel_size = 0.0001
+transparent = false
+shaded = true
 texture = ExtResource("4_r3fl7")
 
 [node name="Area3D" type="Area3D" parent="cards/asmodeus" unique_id=447247618]
@@ -148,6 +167,28 @@ shape = SubResource("BoxShape3D_i5arm")
 [node name="Desk" type="MeshInstance3D" parent="Scene3D" unique_id=1134808714]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
 mesh = SubResource("BoxMesh_tuemg")
+
+[node name="Interactive" type="Node3D" parent="Scene3D/Desk" unique_id=2080865381]
+
+[node name="EndWatting" type="MeshInstance3D" parent="Scene3D/Desk/Interactive" unique_id=1700010487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7945567, 1.5419137, 0.37455297)
+mesh = SubResource("BoxMesh_wc5p8")
+script = ExtResource("8_jsk3o")
+
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk/Interactive/EndWatting" unique_id=872858167]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/Interactive/EndWatting/Area3D" unique_id=526669290]
+shape = SubResource("BoxShape3D_4arys")
+
+[node name="EndCombo" type="MeshInstance3D" parent="Scene3D/Desk/Interactive" unique_id=1729828926]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5536989, 0.8419405, 0.28806573)
+mesh = SubResource("BoxMesh_wc5p8")
+script = ExtResource("9_4arys")
+
+[node name="Area3D" type="Area3D" parent="Scene3D/Desk/Interactive/EndCombo" unique_id=796014476]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Scene3D/Desk/Interactive/EndCombo/Area3D" unique_id=2111500898]
+shape = SubResource("BoxShape3D_4arys")
 
 [node name="deck" type="Sprite3D" parent="Scene3D/Desk" unique_id=2088461718]
 transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.3711378e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -0.61900973, 1.5591071, 0)
@@ -209,4 +250,7 @@ transform = Transform3D(4.371139e-08, -4.3711392e-08, 1, 1, -8.7422784e-08, -4.3
 text = "手牌区域"
 font_size = 18
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Scene3D" unique_id=1700010487]
+[connection signal="mouse_entered" from="Scene3D/Desk/Interactive/EndWatting/Area3D" to="Scene3D/Desk/Interactive/EndWatting" method="_on_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk/Interactive/EndWatting/Area3D" to="Scene3D/Desk/Interactive/EndWatting" method="_on_area_3d_mouse_exited"]
+[connection signal="mouse_entered" from="Scene3D/Desk/Interactive/EndCombo/Area3D" to="Scene3D/Desk/Interactive/EndCombo" method="_on_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="Scene3D/Desk/Interactive/EndCombo/Area3D" to="Scene3D/Desk/Interactive/EndCombo" method="_on_area_3d_mouse_exited"]

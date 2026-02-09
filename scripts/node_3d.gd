@@ -6,10 +6,9 @@ var _cached_cards_node: Node = null  # 缓存的cards节点
 var _cached_players_size: int = 0    # 缓存的玩家数量
 const HAND_CARDS_MAX: int = 14       # 手牌上限常量
 const DEAL_INTERVAL: int = 30        # 发牌间隔常量
-var rot_animation:AnimationUtils = AnimationUtils.new(0,0,100)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	rot_animation.play(true)
+	global.cube_rot_animation.play(true)
 	global.current_play_turn = 0
 	global.round = 0
 	global.game_progress = 1
@@ -44,7 +43,7 @@ func _update_player_activity() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	rot_animation.update(delta)
+	global.cube_rot_animation.update(delta)
 	# 优化：缓存节点引用
 	if _cached_cards_node == null:
 		_cached_cards_node = $cards
@@ -80,25 +79,12 @@ func _process(delta: float) -> void:
 			for player in global.players:
 				player.process()
 		global.GameState.WAITING:
-			if rot_animation.done && rot_animation.end_value == 90:
+			if global.cube_rot_animation.done && global.cube_rot_animation.end_value == 90:
 				global.current_state = global.GameState.COMBOING
 				global.spring_rotX_animation.set_target(45,200)
 				global.spring_rotX_animation.play(true)
 			global.round = global.game_progress - 1;
-			# 优化：使用更高效的方式计算总大小
-			var total_waiting_size: int = 0;
-			for player in global.players:
-				total_waiting_size += player.waitingGroup.size()
-				if !player.can_combo:
-					total_waiting_size = -9999
-			if total_waiting_size == 0 && rot_animation.end_value != 90:
-				global.spring_length_animation.set_target(3,200)
-				global.spring_length_animation.play(true)
-				global.spring_rotX_animation.set_target(0,200)
-				global.spring_rotX_animation.play(true)
-				rot_animation.set_target(90,500)
-				rot_animation.play(true)
-			global.Cube_Desk.global_rotation.z = deg_to_rad(rot_animation.value)
+			global.Cube_Desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
 		global.GameState.COMBOING:
 			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
 				global.spring_length_animation.set_target(1,200)
@@ -114,22 +100,22 @@ func _process(delta: float) -> void:
 			for player in global.players:
 				player.process()
 		global.GameState.END:
-			if global.round > global.players.size() - 1:
-				if rot_animation.end_value != 0:
-					global.spring_length_animation.set_target(3,200)
-					global.spring_length_animation.play(true)
-					rot_animation.set_target(0,500)
-					rot_animation.play(true)
-			else:
-				global.player_activity = global.players.get(global.round)
-			global.Cube_Desk.global_rotation.z = deg_to_rad(rot_animation.value)
-			if rot_animation.done && rot_animation.end_value == 0:
+			global.Cube_Desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
+			if global.cube_rot_animation.end_value != 0:
+				global.spring_length_animation.set_target(3,200)
+				global.spring_length_animation.play(true)
+				global.cube_rot_animation.set_target(0,500)
+				global.cube_rot_animation.play(true)
+			
+			if global.cube_rot_animation.done && global.cube_rot_animation.end_value == 0:
 				global.player_activity = null
 				global.game_progress += 1
 				global.current_state = global.GameState.DEALING
 				global.Cube_Desk.global_rotation.z = 0
 	tick+=1
-	pass
+
+
+	
 	
 func initialize_card(sprite: Sprite3D) -> void:
 	# 优化：缓存路径替换结果
@@ -163,7 +149,3 @@ func _on_tame_button_up() -> void:
 				card.switch_state(card.States.TO_HELD)
 				global.selectedCard = null
 				
-
-func _on_round_end_button_up() -> void:
-	if global.GameState.END:
-		global.round += 1;

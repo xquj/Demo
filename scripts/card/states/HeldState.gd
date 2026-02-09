@@ -9,8 +9,8 @@ var base_pos: Vector3
 var base_rot: Vector3
 var base_bottom_local_pos: Vector3
 
-const HOVER_HEIGHT: float = 0.03
-const HOVER_FORWARD: float = 0.005
+const HOVER_HEIGHT: float = 0.04
+const HOVER_FORWARD: float = 0.02
 const HOVER_ROT_DEG: float = 0.005
 const HOVER_DURATION: float = 0.12
 const FAN_SPREAD_DEG: float = 14.0
@@ -40,7 +40,7 @@ func exit() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func update(delta: float) -> void:
 	super.update(delta)
-	if global.spring_rotX_animation.done:
+	if global.spring_rotX_animation.done and global.cube_rot_animation.done:
 		_update_hand_layout()
 
 
@@ -53,7 +53,7 @@ func handle_input(event: InputEvent) -> void:
 				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
 	
 func mouse_entered(entered: bool) -> void:
-	if card.state != self or area == null or !area.visible:
+	if card.state != self or area == null or !area.visible or !global.cube_rot_animation.done or !global.spring_rotX_animation.done:
 		return
 	is_entered = entered
 	if entered:

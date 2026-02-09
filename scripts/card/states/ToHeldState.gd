@@ -12,7 +12,7 @@ func enter() -> void:
 	
 	if card.team_id == global.local_player.team_id:
 		target_rot = Vector3(card.rotation.x + deg_to_rad(75),card.rotation.y,card.rotation.z)
-		target_pos = Vector3(global.camera.global_position.x - 0.125 + idx * 0.1,global.camera.global_position.y - 0.5,global.camera.global_position.z - 0.15)
+		target_pos = Vector3(global.camera.global_position.x - 0.25 + idx * 0.1,global.camera.global_position.y - 0.5 + idx * 0.001,global.camera.global_position.z - 0.15 + idx * 0.001)
 		card.reparent(global.camera)
 	else:
 		target_pos = Vector3(global.MPlayer.global_position.x - 0.125 + idx * 0.2,global.MPlayer.global_position.y + 0.01,global.MPlayer.global_position.z)

@@ -24,6 +24,7 @@ static var MPlayer: CharacterBody3D
 static var Cube_Desk: MeshInstance3D
 static var spring_length_animation: AnimationUtils = AnimationUtils.new(0,0,0)
 static var spring_rotX_animation: AnimationUtils = AnimationUtils.new(0,0,0)
+static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0,0,0)
 # 状态枚举（必须前置声明，放在current_state变量之前）
 enum GameState {
 	DEALING,   # 发牌状态
