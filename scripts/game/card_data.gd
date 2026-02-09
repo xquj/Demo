@@ -5,7 +5,7 @@ var cards: Dictionary = {}
 
 func load_cards() -> void:
 	cards.clear()
-	var file := FileAccess.open("res://data/cards.json", FileAccess.READ)
+	var file: FileAccess = FileAccess.open("res://data/cards.json", FileAccess.READ)
 	if file == null:
 		push_warning("cards.json missing; using empty card database")
 		return
@@ -18,7 +18,8 @@ func load_cards() -> void:
 			cards[entry["id"]] = entry
 
 func get_card(id: String) -> Dictionary:
-	return cards.get(id, {})
+	var result: Dictionary = cards.get(id, {}) as Dictionary
+	return result
 
 func all_cards() -> Array[Dictionary]:
 	return cards.values()
