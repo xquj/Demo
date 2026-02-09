@@ -4,18 +4,6 @@ class_name GameManager
 const LANE_COUNT := 4
 const SCALE_THRESHOLD := 10
 
-class PlayerState:
-	var name: String
-	var is_player: bool
-	var deck: Array[Dictionary] = []
-	var hand: Array[Card3D] = []
-	var board: Array[Card3D] = []
-	var bones: int = 0
-
-	func _init(name_: String, is_player_: bool) -> void:
-		name = name_
-		is_player = is_player_
-
 @export var card_scene: PackedScene
 
 @onready var player_hand_anchor: Node3D = $PlayerHand
