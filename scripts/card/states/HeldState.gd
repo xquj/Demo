@@ -14,9 +14,9 @@ const HOVER_FORWARD: float = 0.02
 const HOVER_ROT_DEG: float = 0.005
 const HOVER_DURATION: float = 0.12
 const FAN_SPREAD_DEG: float = 14.0
-const FAN_SPREAD_MIN_DEG: float = 6.0
 const FAN_SHRINK_START_COUNT: int = 6
-const FAN_SHRINK_STEP_DEG: float = 1.0
+const FAN_SHRINK_STEP: float = 0.08
+const FAN_SPACING_MIN: float = 0.4
 const FAN_CURVE_OUT: float = 0.03
 
 func enter() -> void:
@@ -86,20 +86,23 @@ func _update_hand_layout() -> void:
 	if index == -1:
 		return
 	var shrink_steps: int = max(0, count - FAN_SHRINK_START_COUNT)
-	var spread_deg: float = max(FAN_SPREAD_MIN_DEG, FAN_SPREAD_DEG - float(shrink_steps) * FAN_SHRINK_STEP_DEG)
+	var spacing_scale: float = max(FAN_SPACING_MIN, 1.0 - float(shrink_steps) * FAN_SHRINK_STEP)
 	var t: float = 0.5
 	if count > 1:
 		t = float(index) / float(count - 1)
-	var angle_deg: float = lerp(-spread_deg * 0.5, spread_deg * 0.5, t)
+	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
 	base_rot.z = -angle_rad
 	var basis: Basis = Basis.from_euler(base_rot)
 	var new_up: Vector3 = basis.y.normalized()
 	var forward_dir: Vector3 = -basis.z.normalized()
+	var right_dir: Vector3 = basis.x.normalized()
 	var half_height: float = _get_half_height()
+	var half_width: float = _get_half_width()
 	var curve_t: float = 1.0 - abs(2.0 * t - 1.0)
 	var curve_offset: float = FAN_CURVE_OUT * curve_t * curve_t
-	base_local_pos = base_bottom_local_pos + new_up * half_height + forward_dir * curve_offset
+	var lateral_offset: float = (t - 0.5) * half_width * 2.0 * spacing_scale
+	base_local_pos = base_bottom_local_pos + new_up * half_height + forward_dir * curve_offset + right_dir * lateral_offset
 	base_pos = _get_parent_global_pos(base_local_pos)
 	if !is_entered and !card.moving_ablity:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
@@ -109,6 +112,11 @@ func _get_half_height() -> float:
 	if card == null or card.texture == null:
 		return 0.0
 	return card.texture.get_size().y * card.pixel_size * card.scale.y * 0.5
+
+func _get_half_width() -> float:
+	if card == null or card.texture == null:
+		return 0.0
+	return card.texture.get_size().x * card.pixel_size * card.scale.x * 0.5
 
 func _get_bottom_anchor_pos(center_pos: Vector3, basis: Basis) -> Vector3:
 	return center_pos - basis.y.normalized() * _get_half_height()
