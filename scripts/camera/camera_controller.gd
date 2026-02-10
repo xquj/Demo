@@ -139,6 +139,15 @@ func focus_hand(duration_ms: int = DEFAULT_DURATION_MS) -> void:
 func focus_board(duration_ms: int = DEFAULT_DURATION_MS) -> void:
 	request_state(CameraState.BOARD, duration_ms)
 
+
+# 切换视角：HAND <-> BOARD
+# 用于输入层的一键切换场景观察角度。
+func toggle_state(duration_ms: int = DEFAULT_DURATION_MS, force: bool = false) -> void:
+	if _target_state == CameraState.HAND:
+		request_state(CameraState.BOARD, duration_ms, force)
+	else:
+		request_state(CameraState.HAND, duration_ms, force)
+
 # 兼容旧接口：若目前是桌面目标，则回手牌。
 func ensure_hand_length(duration_ms: int = DEFAULT_DURATION_MS) -> void:
 	ensure_state(CameraState.HAND, duration_ms)
