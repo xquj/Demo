@@ -26,6 +26,15 @@ enum BoardViewDirection {
 # 默认过渡时间（毫秒）
 const DEFAULT_DURATION_MS: int = 220
 
+# 统一动作名常量（供输入层与外部系统接入）。
+const ACTION_VIEW_FRONT: StringName = &"camera_view_front"
+const ACTION_VIEW_LEFT: StringName = &"camera_view_left"
+const ACTION_VIEW_RIGHT: StringName = &"camera_view_right"
+const ACTION_VIEW_BACK: StringName = &"camera_view_back"
+const ACTION_TOGGLE: StringName = &"camera_toggle"
+const ACTION_FOCUS_HAND: StringName = &"camera_focus_hand"
+const ACTION_FOCUS_BOARD: StringName = &"camera_focus_board"
+
 # 邪恶冥刻风格：镜头在稳定阶段有细微呼吸/摇摆。
 const SWAY_SPEED: float = 1.35
 const SWAY_YAW_DEG: float = 0.7
@@ -183,22 +192,39 @@ func focus_board_direction(direction: BoardViewDirection, duration_ms: int = DEF
 		BoardViewDirection.BACK:
 			request_state(CameraState.BOARD_BACK, duration_ms)
 
-# 对外 API：动作名接入（便于 InputMap/热更新配置接入）。
+# 对外 API：统一动作分发（推荐输入层调用）。
 # 返回值：是否消费该动作。
-func handle_board_action(action_name: StringName, duration_ms: int = DEFAULT_DURATION_MS) -> bool:
+func handle_camera_action(action_name: StringName, duration_ms: int = DEFAULT_DURATION_MS) -> bool:
 	match action_name:
-		&"camera_view_front":
+		ACTION_VIEW_FRONT:
 			focus_board_direction(BoardViewDirection.FRONT, duration_ms)
 			return true
-		&"camera_view_left":
+		ACTION_VIEW_LEFT:
 			focus_board_direction(BoardViewDirection.LEFT, duration_ms)
 			return true
-		&"camera_view_right":
+		ACTION_VIEW_RIGHT:
 			focus_board_direction(BoardViewDirection.RIGHT, duration_ms)
 			return true
-		&"camera_view_back":
+		ACTION_VIEW_BACK:
 			focus_board_direction(BoardViewDirection.BACK, duration_ms)
 			return true
+		ACTION_FOCUS_HAND:
+			focus_hand(duration_ms)
+			return true
+		ACTION_FOCUS_BOARD:
+			focus_board(duration_ms)
+			return true
+		ACTION_TOGGLE:
+			toggle_state(duration_ms)
+			return true
+		_:
+			return false
+
+# 兼容旧接口：仅处理桌面方向动作。
+func handle_board_action(action_name: StringName, duration_ms: int = DEFAULT_DURATION_MS) -> bool:
+	match action_name:
+		ACTION_VIEW_FRONT, ACTION_VIEW_LEFT, ACTION_VIEW_RIGHT, ACTION_VIEW_BACK:
+			return handle_camera_action(action_name, duration_ms)
 		_:
 			return false
 
