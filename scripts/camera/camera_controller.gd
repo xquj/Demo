@@ -37,12 +37,7 @@ func _update(delta: float) -> void:
 	camera_update(delta)
 	
 func _input_event(event: InputEvent) -> void:
-	print(key_down)
-	if event is InputEventKey:
-		if event.is_action("left",true):
-			switch_state(STATE.Left,100)
-		if event.is_action("right",true):
-			switch_state(STATE.Right,100)
+	pass
 		
 func animation_update(delta: float) -> void:
 	is_moving = !spring_length_animation.done || !spring_rot_animation.done
@@ -68,14 +63,14 @@ func camera_update(delta: float) -> void:
 func switch_state(state_: STATE,time_: int) -> void:
 	if state_ != state:
 		state = state_
-	else:
-		state = STATE.Normal
+		is_moving = true
 	time = time_
 
 func move_(length: float,rot: Vector3,time_: int) -> void:
 	time = time_
 	_set_targte_spring_length(length,time_)
 	_set_targte_spring_rot(rot,time_)
+	is_moving = !spring_length_animation.done || !spring_rot_animation.done
 	
 func is_state(state_: STATE) -> bool:
 	return  state == state_

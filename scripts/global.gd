@@ -24,11 +24,19 @@ static var multi_player_node: CharacterBody3D
 static var cube_desk: MeshInstance3D
 static var camera_controller: CameraController
 static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0,0,0)
+static var game_sense: GameSense3D
 # 状态枚举（必须前置声明，放在current_state变量之前）
 enum GameState {
+	TO_DEALING,   #(过渡态)
 	DEALING,   # 发牌状态
+	TO_SELECTING, #(过渡态)
 	SELECTING, # 选牌状态
+	TO_WAITING,   #(过渡态)
 	WAITING,   # 等待状态
-	COMBOING,  # 连招状态
-	END        # 回合末状态
+	TO_COMBOING,  #(过渡态)
+	COMBOING  # 连招状态
 }
+
+static func is_transitional_state() -> bool:
+	return (current_state == GameState.TO_DEALING || current_state == GameState.TO_SELECTING 
+			|| current_state == GameState.TO_WAITING || current_state == GameState.TO_COMBOING)

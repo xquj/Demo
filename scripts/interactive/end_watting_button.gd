@@ -22,9 +22,8 @@ func _input(event: InputEvent) -> void:
 					if !player.can_combo:
 						total_waiting_size = -9999
 				if total_waiting_size == 0 && global.cube_rot_animation.end_value != 90:
-					global.camera_controller.switch_state(global.camera_controller.STATE.Up,200)
-					global.cube_rot_animation.set_target(90,500)
-					global.cube_rot_animation.play(true)
+					global.game_sense._switch_state(global.GameState.COMBOING)
+
 
 func _on_area_3d_mouse_entered() -> void:
 	is_entered = true

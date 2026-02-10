@@ -51,11 +51,10 @@ func handle_input(event: InputEvent) -> void:
 				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
 	
 func mouse_entered(entered: bool) -> void:
-	if card.state != self or area == null or !area.visible:
+	if card.state != self or area == null or !area.visible or global.is_transitional_state():
 		return
 	is_entered = entered
 	if entered:
-		if !global.camera_controller.is_state(global.camera_controller.STATE.Normal) || global.camera_controller.is_moving: return
 		card.set_color(Color(0.75, 0.75, 0.75, 1.0),100)
 		var forward: Vector3 = -Vector3.FORWARD
 		var target_pos: Vector3 = _get_parent_global_pos(
