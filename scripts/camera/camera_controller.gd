@@ -15,6 +15,14 @@ enum CameraState {
 	BOARD_BACK    # 桌面后视角
 }
 
+# 对外 API：桌面观察方向。
+enum BoardViewDirection {
+	FRONT,
+	LEFT,
+	RIGHT,
+	BACK,
+}
+
 # 默认过渡时间（毫秒）
 const DEFAULT_DURATION_MS: int = 220
 
@@ -163,21 +171,51 @@ func focus_hand(duration_ms: int = DEFAULT_DURATION_MS) -> void:
 func focus_board(duration_ms: int = DEFAULT_DURATION_MS) -> void:
 	request_state(CameraState.BOARD_FRONT, duration_ms)
 
-# WASD 切换视角：
-# W = 前视角，A = 左视角，S = 后视角，D = 右视角。
+# 对外 API：按方向切到桌面视角（推荐其他脚本调用）。
+func focus_board_direction(direction: BoardViewDirection, duration_ms: int = DEFAULT_DURATION_MS) -> void:
+	match direction:
+		BoardViewDirection.FRONT:
+			request_state(CameraState.BOARD_FRONT, duration_ms)
+		BoardViewDirection.LEFT:
+			request_state(CameraState.BOARD_LEFT, duration_ms)
+		BoardViewDirection.RIGHT:
+			request_state(CameraState.BOARD_RIGHT, duration_ms)
+		BoardViewDirection.BACK:
+			request_state(CameraState.BOARD_BACK, duration_ms)
+
+# 对外 API：动作名接入（便于 InputMap/热更新配置接入）。
+# 返回值：是否消费该动作。
+func handle_board_action(action_name: StringName, duration_ms: int = DEFAULT_DURATION_MS) -> bool:
+	match action_name:
+		&"camera_view_front":
+			focus_board_direction(BoardViewDirection.FRONT, duration_ms)
+			return true
+		&"camera_view_left":
+			focus_board_direction(BoardViewDirection.LEFT, duration_ms)
+			return true
+		&"camera_view_right":
+			focus_board_direction(BoardViewDirection.RIGHT, duration_ms)
+			return true
+		&"camera_view_back":
+			focus_board_direction(BoardViewDirection.BACK, duration_ms)
+			return true
+		_:
+			return false
+
+# 兼容旧接口：按 WASD 键值切桌面方向。
 func focus_board_by_wasd(keycode: Key, duration_ms: int = DEFAULT_DURATION_MS) -> bool:
 	match keycode:
 		KEY_W:
-			request_state(CameraState.BOARD_FRONT, duration_ms)
+			focus_board_direction(BoardViewDirection.FRONT, duration_ms)
 			return true
 		KEY_A:
-			request_state(CameraState.BOARD_LEFT, duration_ms)
+			focus_board_direction(BoardViewDirection.LEFT, duration_ms)
 			return true
 		KEY_S:
-			request_state(CameraState.BOARD_BACK, duration_ms)
+			focus_board_direction(BoardViewDirection.BACK, duration_ms)
 			return true
 		KEY_D:
-			request_state(CameraState.BOARD_RIGHT, duration_ms)
+			focus_board_direction(BoardViewDirection.RIGHT, duration_ms)
 			return true
 		_:
 			return false

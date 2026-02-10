@@ -1,5 +1,12 @@
 extends SpringArm3D
 
+const CAMERA_ACTIONS: Array[StringName] = [
+	&"camera_view_front",
+	&"camera_view_left",
+	&"camera_view_back",
+	&"camera_view_right",
+]
+
 func _ready() -> void:
 	global.camera_controller.initialize()
 
@@ -9,10 +16,16 @@ func _process(delta: float) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and !event.echo:
-		# 邪恶冥刻风格：WASD 快速切换桌面观察角度。
-		# W=前 / A=左 / S=后 / D=右
+		# API 接入优先：从 InputMap 动作名驱动相机方向。
+		for action_name in CAMERA_ACTIONS:
+			if InputMap.has_action(action_name) and event.is_action_pressed(action_name):
+				if global.camera_controller.handle_board_action(action_name, 260):
+					return
+
+		# 兼容兜底：若未配置 InputMap，则仍支持 WASD。
 		if global.camera_controller.focus_board_by_wasd(event.keycode, 260):
 			return
+
 		# 保留 C 键：在“手牌视角 <-> 桌面默认视角”之间切换。
 		if event.keycode == KEY_C:
 			global.camera_controller.toggle_state(260)
