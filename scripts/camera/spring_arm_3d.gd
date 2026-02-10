@@ -1,19 +1,18 @@
 extends SpringArm3D
 
-var spring_length_delta: float = 0;
-# Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	global.spring_length_animation = AnimationUtils.new(1,1,500)
-	global.spring_length_animation.play(true)
-	global.spring_rot_x_animation = AnimationUtils.new(45,45,500)
-	global.spring_rot_x_animation.play(true)
+	global.camera_controller.initialize()
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	global.spring_rot_x_animation.update(delta)
-	global.spring_length_animation.update(delta)
-	spring_length = global.spring_length_animation.value
-	rotation.x = deg_to_rad(global.spring_rot_x_animation.value)
+	global.camera_controller.update(delta)
+	global.camera_controller.apply_to_spring_arm(self)
 
 func _input(event: InputEvent) -> void:
-	pass
+	if event is InputEventKey and event.pressed and !event.echo:
+		# 邪恶冥刻风格：WASD 快速切换桌面观察角度。
+		# W=前 / A=左 / S=后 / D=右
+		if global.camera_controller.focus_board_by_wasd(event.keycode, 260):
+			return
+		# 保留 C 键：在“手牌视角 <-> 桌面默认视角”之间切换。
+		if event.keycode == KEY_C:
+			global.camera_controller.toggle_state(260)
