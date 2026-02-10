@@ -30,6 +30,8 @@ var _shake_timer: float = 0.0
 var _shake_duration: float = 0.0
 var _shake_power: float = 0.0
 var _shake_seed: float = 0.0
+var _base_fov: float = 75.0
+var _shake_fov_kick: float = 4.0
 
 # 邪恶冥刻风格：视角预设（长度、欧拉角、切换时长）
 var _state_profile: Dictionary = {
@@ -76,6 +78,8 @@ func _enter() -> void:
 	spring_length_animation.play(true)
 	# 用系统时间生成随机种子，让每次晃动轨迹不同
 	_shake_seed = float(Time.get_ticks_msec() % 10000)
+	# 缓存基础FOV，摇晃期间做轻微呼吸冲击，结束后回归
+	_base_fov = camera.fov
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -155,8 +159,9 @@ func is_state(state_: STATE) -> bool:
 # 外部可调用：触发邪恶冥刻风格的镜头摇晃
 # power建议范围：0.2~1.5，duration建议范围：0.1~0.45秒
 func play_inscryption_shake(power: float = 0.6,duration: float = 0.22) -> void:
-	_shake_power = max(power,0.0)
-	_shake_duration = max(duration,0.0)
+	# 提升可感知度：限制最小力度和最小时长，避免“触发了但肉眼几乎看不见”
+	_shake_power = clamp(power,0.2,2.0)
+	_shake_duration = clamp(duration,0.08,0.5)
 	_shake_timer = _shake_duration
 	_shake_seed += 17.0
 
@@ -176,12 +181,12 @@ func _get_state_profile(state_: STATE) -> Dictionary:
 		return _state_profile[state_]
 	return _state_profile[STATE.Normal]
 
-# 叠加邪恶冥刻风格摇晃：仅旋转抖动（修复位移偏移BUG）
+# 叠加邪恶冥刻风格摇晃：旋转 + 轻微FOV冲击（修复位移偏移BUG）
 func _apply_shake(delta: float,base_rot: Vector3) -> void:
-	# 修复偏移BUG：摇晃仅作用在旋转，不再改写camera.position
-	# 之前的位移抖动在部分层级结构下会与SpringArm计算叠加，造成视角被“推走”
+	# 修复偏移BUG：摇晃仅作用在旋转/FOV，不再改写camera.position
 	if _shake_timer <= 0.0 or _shake_duration <= 0.0 or _shake_power <= 0.0:
 		camera.rotation = base_rot
+		camera.fov = _base_fov
 		return
 	
 	_shake_timer -= delta
@@ -189,19 +194,28 @@ func _apply_shake(delta: float,base_rot: Vector3) -> void:
 		_shake_timer = 0.0
 	var t := _shake_duration - _shake_timer
 	var normalized_t := clamp(t / _shake_duration,0.0,1.0)
-	# 逐帧衰减，前段更猛、后段快速收敛，模拟邪恶冥刻的“击打感”
-	var fade := pow(1.0 - normalized_t,2.2)
+	# 衰减曲线：保留前段冲击，后段迅速收尾
+	var fade := pow(1.0 - normalized_t,1.4)
 	var amp := _shake_power * fade
 	
 	# 通过多频率正弦构造可控随机感，避免纯随机导致画面跳变
-	var rx := sin((_shake_seed + t * 29.0) * 1.71)
-	var ry := sin((_shake_seed + t * 37.0) * 2.13 + 0.9)
-	var rz := sin((_shake_seed + t * 41.0) * 2.61 + 1.7)
+	var rx := sin((_shake_seed + t * 36.0) * 2.05)
+	var ry := sin((_shake_seed + t * 44.0) * 2.51 + 0.9)
+	var rz := sin((_shake_seed + t * 51.0) * 2.93 + 1.7)
 	
-	# 旋转摇晃（角度小但高频）
-	var rot_offset_deg := Vector3(rx,ry * 0.72,rz * 0.62) * (1.5 * amp)
+	# 旋转摇晃（明显但可控，避免眩晕）
+	var rot_offset_deg := Vector3(
+		rx * 2.6,
+		ry * 1.7,
+		rz * 1.3
+	) * amp
 	camera.rotation = base_rot + Vector3(
 		deg_to_rad(rot_offset_deg.x),
 		deg_to_rad(rot_offset_deg.y),
 		deg_to_rad(rot_offset_deg.z)
 	)
+	
+	# 邪恶冥刻风格补充：轻微FOV冲击，增强“受击/切镜反馈”
+	# 前半程先扩张，后半程回落
+	var fov_pulse := sin(normalized_t * PI)
+	camera.fov = _base_fov + fov_pulse * (_shake_fov_kick * amp)
