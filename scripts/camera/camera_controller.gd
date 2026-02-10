@@ -31,6 +31,7 @@ var _shake_duration: float = 0.0
 var _shake_power: float = 0.0
 var _shake_seed: float = 0.0
 var _base_fov: float = 75.0
+var _base_arm_rot: Vector3 = Vector3.ZERO
 var _shake_fov_kick: float = 4.0
 
 # 邪恶冥刻风格：视角预设（长度、欧拉角、切换时长）
@@ -80,6 +81,8 @@ func _enter() -> void:
 	_shake_seed = float(Time.get_ticks_msec() % 10000)
 	# 缓存基础FOV，摇晃期间做轻微呼吸冲击，结束后回归
 	_base_fov = camera.fov
+	# 缓存弹簧臂基础旋转，摇晃结束后确保归位
+	_base_arm_rot = arm.rotation
 	
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -145,6 +148,8 @@ func switch_state(state_: STATE,time_: int) -> void:
 	if state_ != state:
 		state = state_
 		is_moving = true
+		# 不管是外部流程切镜还是键盘切镜，都给一个可见的短促反馈
+		play_inscryption_shake(0.55,0.16)
 	time = time_
 
 func move_(length: float,rot: Vector3,time_: int) -> void:
@@ -187,6 +192,7 @@ func _apply_shake(delta: float,base_rot: Vector3) -> void:
 	if _shake_timer <= 0.0 or _shake_duration <= 0.0 or _shake_power <= 0.0:
 		camera.rotation = base_rot
 		camera.fov = _base_fov
+		arm.rotation = _base_arm_rot
 		return
 	
 	_shake_timer -= delta
@@ -214,6 +220,14 @@ func _apply_shake(delta: float,base_rot: Vector3) -> void:
 		deg_to_rad(rot_offset_deg.y),
 		deg_to_rad(rot_offset_deg.z)
 	)
+	
+	# 给SpringArm叠加一个更低频的小幅摆动，增强可见度（不改位置，不会漂移）
+	var arm_offset := Vector3(
+		deg_to_rad(rx * 0.9 * amp),
+		deg_to_rad(ry * 0.55 * amp),
+		0.0
+	)
+	arm.rotation = _base_arm_rot + arm_offset
 	
 	# 邪恶冥刻风格补充：轻微FOV冲击，增强“受击/切镜反馈”
 	# 前半程先扩张，后半程回落
