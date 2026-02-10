@@ -22,10 +22,7 @@ func _input(event: InputEvent) -> void:
 					if !player.can_combo:
 						total_waiting_size = -9999
 				if total_waiting_size == 0 && global.cube_rot_animation.end_value != 90:
-					global.spring_length_animation.set_target(3,200)
-					global.spring_length_animation.play(true)
-					global.spring_rot_x_animation.set_target(0,200)
-					global.spring_rot_x_animation.play(true)
+					global.camera_controller.switch_state(global.camera_controller.STATE.Up,200)
 					global.cube_rot_animation.set_target(90,500)
 					global.cube_rot_animation.play(true)
 

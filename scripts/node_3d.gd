@@ -23,6 +23,7 @@ func _ready() -> void:
 	global.held_area1_label = $Scene3D/Desk/HeldArea1
 	global.held_area2_label = $Scene3D/Desk/HeldArea2
 	global.cube_desk = $Scene3D/Desk
+	global.camera_controller =  CameraController.new($LocalPlayer/SpringArm3D,$LocalPlayer/SpringArm3D/Camera3D)
 	pass
 
 # ====================【辅助函数】====================
@@ -43,6 +44,7 @@ func _update_player_activity() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	global.camera_controller._update(delta)
 	global.cube_rot_animation.update(delta)
 	# 缓存节点引用，避免每帧重复查找。
 	if _cached_cards_node == null:
@@ -53,9 +55,7 @@ func _process(delta: float) -> void:
 	global.cards_number_label.text = "(" + str(hand_size) + "/" + str(HAND_CARDS_MAX) + ")"
 	match global.current_state:
 		global.GameState.DEALING:
-			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				global.spring_length_animation.set_target(1,200)
-				global.spring_length_animation.play(true)
+			global.camera_controller.switch_state(global.camera_controller.STATE.Normal,250)
 				
 			for player in global.players:
 				player.can_combo = true
@@ -81,16 +81,12 @@ func _process(delta: float) -> void:
 		global.GameState.WAITING:
 			if global.cube_rot_animation.done && global.cube_rot_animation.end_value == 90:
 				global.current_state = global.GameState.COMBOING
-				global.spring_rot_x_animation.set_target(45,200)
-				global.spring_rot_x_animation.play(true)
+				global.camera_controller.switch_state(global.camera_controller.STATE.Up,250)
 			global.round = global.game_progress - 1;
 			global.cube_desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
 		global.GameState.COMBOING:
-			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				global.spring_length_animation.set_target(1,200)
-				global.spring_length_animation.play(true)
-				
-				
+			global.camera_controller.switch_state(global.camera_controller.STATE.Normal,250)
+			
 			if global.round > global.game_progress:
 				global.current_state = global.GameState.END
 				global.round = 0;
@@ -102,8 +98,7 @@ func _process(delta: float) -> void:
 		global.GameState.END:
 			global.cube_desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
 			if global.cube_rot_animation.end_value != 0:
-				global.spring_length_animation.set_target(3,200)
-				global.spring_length_animation.play(true)
+				global.camera_controller.switch_state(global.camera_controller.STATE.Up,250)
 				global.cube_rot_animation.set_target(0,500)
 				global.cube_rot_animation.play(true)
 			
@@ -114,7 +109,10 @@ func _process(delta: float) -> void:
 				global.cube_desk.global_rotation.z = 0
 	tick+=1
 
-		
+func _input(event: InputEvent) -> void:
+	global.camera_controller._input_event(event)
+
+
 func initialize_card(sprite: Sprite3D) -> void:
 	# 为新卡牌挂载脚本并纳入选牌组。
 	sprite.set_script(load("res://scripts/card/card_base.gd"))
