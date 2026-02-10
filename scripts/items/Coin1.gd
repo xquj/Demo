@@ -1,4 +1,4 @@
-class_name Coin1 extends ItemDate
+class_name Coin1 extends ItemData
 
 # 构造函数
 func _init() -> void:

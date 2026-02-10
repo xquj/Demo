@@ -24,8 +24,8 @@ func _input(event: InputEvent) -> void:
 				if total_waiting_size == 0 && global.cube_rot_animation.end_value != 90:
 					global.spring_length_animation.set_target(3,200)
 					global.spring_length_animation.play(true)
-					global.spring_rotX_animation.set_target(0,200)
-					global.spring_rotX_animation.play(true)
+					global.spring_rot_x_animation.set_target(0,200)
+					global.spring_rot_x_animation.play(true)
 					global.cube_rot_animation.set_target(90,500)
 					global.cube_rot_animation.play(true)
 

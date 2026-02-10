@@ -25,7 +25,7 @@ var target_scale: Vector3
 # 贝塞尔控制点
 var control_pos: Vector3
 # 运动开关与时间参数
-var moving_ablity: bool
+var moving_ability: bool
 var duration: float
 var elapsed: float
 #Other
@@ -39,14 +39,14 @@ func _ready() -> void:
 	original_modulate = modulate
 	color_animation = ColorAnimationUtils.new(modulate,modulate,0)
 	rotation = Vector3(deg_to_rad(90),deg_to_rad(90),deg_to_rad(0))
-	global_position = global.Deck.global_position
+	global_position = global.deck.global_position
 	start_pos = global_position
 	start_rot = rotation
 	target_rot = rotation
 	start_scale = scale
 	target_scale = scale
 	control_pos = global_position
-	moving_ablity = false
+	moving_ability = false
 	duration = 0.0
 	elapsed = 0.0
 	state = DealingState.new(self)

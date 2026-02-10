@@ -6,7 +6,7 @@ var is_entered: bool
 var start_pos: Vector3
 
 func enter() -> void:
-	#区域初始化
+	# 区域初始化：绑定鼠标进入/离开事件。
 	for child in card.get_children():
 		if child as Area3D:
 			area = child
@@ -19,14 +19,14 @@ func enter() -> void:
 	
 func exit() -> void:
 	super.exit()
-	#初始化状态
+	# 退出选牌状态时，恢复卡牌显示状态并写回归属信息。
 	area.visible = false
 	card.set_color(card.original_modulate,100)
 	
 	global.round += 1;
 	
-	if global.selectGroup.has(card):
-		global.selectGroup.remove_at(global.selectGroup.find(card))
+	if global.selected_group.has(card):
+		global.selected_group.remove_at(global.selected_group.find(card))
 		
 	if global.player_activity != null:
 		card.team_id = global.player_activity.team_id

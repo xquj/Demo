@@ -1,4 +1,4 @@
-class_name AirItem extends ItemDate
+class_name AirItem extends ItemData
 
 # 构造函数
 func _init() -> void:

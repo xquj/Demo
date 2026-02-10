@@ -1,5 +1,5 @@
 extends State
-class_name WaittingState
+class_name WaitingState
 
 
 var area: Area3D
@@ -8,7 +8,7 @@ var start_pos: Vector3
 
 func enter() -> void:
 	super.enter()
-	#区域初始化
+	# 区域初始化：绑定悬停交互并记录初始位置。
 	for child in card.get_children():
 		if child as Area3D:
 			area = child

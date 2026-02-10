@@ -1,4 +1,4 @@
-class_name ItemDate extends RefCounted
+class_name ItemData extends RefCounted
 
 # 物品基础属性
 var item_id: String  # 物品唯一ID

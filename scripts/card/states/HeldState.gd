@@ -52,7 +52,7 @@ func handle_input(event: InputEvent) -> void:
 				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
 	
 func mouse_entered(entered: bool) -> void:
-	if card.state != self or area == null or !area.visible or !global.cube_rot_animation.done or !global.spring_rotX_animation.done:
+	if card.state != self or area == null or !area.visible or !global.cube_rot_animation.done or !global.spring_rot_x_animation.done:
 		return
 	is_entered = entered
 	if entered:
@@ -94,7 +94,7 @@ func _update_hand_layout() -> void:
 	var half_height: float = _get_half_height()
 	base_local_pos = base_bottom_local_pos + new_up * half_height
 	base_pos = _get_parent_global_pos(base_local_pos)
-	if !is_entered and !card.moving_ablity:
+	if !is_entered and !card.moving_ability:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
 			_move_with_rotation(base_pos, base_rot, 0.1, 0.0, MoveMode.LINEAR, 1.0)
 

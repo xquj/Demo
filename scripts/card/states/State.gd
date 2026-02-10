@@ -98,7 +98,7 @@ func _exit_internal() -> void:
 func _update_movement(delta: float) -> void:
 	# 运动插值更新
 	# 用法：由 _process 内部驱动，无需手动调用
-	if card == null or not card.moving_ablity:
+	if card == null or not card.moving_ability:
 		return
 	if card.duration <= 0.0:
 		_finish_move()
@@ -134,7 +134,7 @@ func _move(
 	card.target_pos = target_pos
 	card.duration = maxf(duration, 0.001)
 	card.elapsed = 0.0
-	card.moving_ablity = true
+	card.moving_ability = true
 	parabola_height = height
 	move_mode = mode
 	move_ease = maxf(ease_weight, 0.01)
@@ -208,7 +208,7 @@ func _finish_move() -> void:
 		card.rotation = card.target_rot
 	if move_scale_enabled:
 		card.scale = card.target_scale
-	card.moving_ablity = false
+	card.moving_ability = false
 	move_rotate_enabled = false
 	move_scale_enabled = false
 
@@ -217,7 +217,7 @@ func _is_move_finished() -> bool:
 	# 用法：if _is_move_finished():
 	if card == null:
 		return true
-	if not card.moving_ablity:
+	if not card.moving_ability:
 		return true
 	return card.duration > 0.0 and card.elapsed >= card.duration
 
