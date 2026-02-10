@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scripts/node_3d.gd" id="1_i5arm"]
 [ext_resource type="Script" uid="uid://6nv3bqigk3pp" path="res://scripts/l_player.gd" id="2_i5arm"]
-[ext_resource type="Script" uid="uid://b5od50la0ruor" path="res://scripts/spring_arm_3d.gd" id="2_noarx"]
+[ext_resource type="Script" uid="uid://b5od50la0ruor" path="res://scripts/camera/spring_arm_3d.gd" id="2_noarx"]
 [ext_resource type="Texture2D" uid="uid://26y3xcr6o70b" path="res://textrue/cards/wyrm_family/agni.png" id="4_jka67"]
 [ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
 [ext_resource type="Texture2D" uid="uid://bs6i4cla8k8oj" path="res://textrue/cards/fire_family/asmodeus.png" id="5_i5arm"]
