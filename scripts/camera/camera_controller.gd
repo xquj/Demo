@@ -26,7 +26,6 @@ var time: int = 0
 var key_down: int
 
 # 邪恶冥刻风格：相机摇晃基础参数
-var _base_camera_pos: Vector3 = Vector3.ZERO
 var _shake_timer: float = 0.0
 var _shake_duration: float = 0.0
 var _shake_power: float = 0.0
@@ -75,8 +74,6 @@ func _enter() -> void:
 	key_down = -999
 	spring_rot_animation.play(true)
 	spring_length_animation.play(true)
-	# 记录基础局部位置，摇晃结束后回到该位置
-	_base_camera_pos = camera.position
 	# 用系统时间生成随机种子，让每次晃动轨迹不同
 	_shake_seed = float(Time.get_ticks_msec() % 10000)
 	
@@ -179,14 +176,17 @@ func _get_state_profile(state_: STATE) -> Dictionary:
 		return _state_profile[state_]
 	return _state_profile[STATE.Normal]
 
-# 叠加邪恶冥刻风格摇晃：包含旋转抖动 + 微量位置抖动
+# 叠加邪恶冥刻风格摇晃：仅旋转抖动（修复位移偏移BUG）
 func _apply_shake(delta: float,base_rot: Vector3) -> void:
+	# 修复偏移BUG：摇晃仅作用在旋转，不再改写camera.position
+	# 之前的位移抖动在部分层级结构下会与SpringArm计算叠加，造成视角被“推走”
 	if _shake_timer <= 0.0 or _shake_duration <= 0.0 or _shake_power <= 0.0:
 		camera.rotation = base_rot
-		camera.position = _base_camera_pos
 		return
 	
 	_shake_timer -= delta
+	if _shake_timer < 0.0:
+		_shake_timer = 0.0
 	var t := _shake_duration - _shake_timer
 	var normalized_t := clamp(t / _shake_duration,0.0,1.0)
 	# 逐帧衰减，前段更猛、后段快速收敛，模拟邪恶冥刻的“击打感”
@@ -205,17 +205,3 @@ func _apply_shake(delta: float,base_rot: Vector3) -> void:
 		deg_to_rad(rot_offset_deg.y),
 		deg_to_rad(rot_offset_deg.z)
 	)
-	
-	# 位置摇晃（非常轻微，保持可读性）
-	var pos_offset := Vector3(
-		sin((_shake_seed + t * 33.0) * 1.91),
-		sin((_shake_seed + t * 27.0) * 1.37 + 0.3),
-		sin((_shake_seed + t * 23.0) * 1.57 + 1.1)
-	) * (0.02 * amp)
-	camera.position = _base_camera_pos + pos_offset
-	
-	if _shake_timer <= 0.0:
-		# 摇晃结束时强制回归基础状态，防止残余偏移
-		_shake_timer = 0.0
-		camera.position = _base_camera_pos
-		camera.rotation = base_rot
