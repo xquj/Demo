@@ -52,7 +52,7 @@ func handle_input(event: InputEvent) -> void:
 				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
 	
 func mouse_entered(entered: bool) -> void:
-	if card.state != self or area == null or !area.visible or !global.cube_rot_animation.done or !global.spring_rot_x_animation.done:
+	if card.state != self or area == null or !area.visible or !global.cube_rot_animation.done or !global.camera_controller.is_rot_stable():
 		return
 	is_entered = entered
 	if entered:

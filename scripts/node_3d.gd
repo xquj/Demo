@@ -53,9 +53,7 @@ func _process(delta: float) -> void:
 	global.cards_number_label.text = "(" + str(hand_size) + "/" + str(HAND_CARDS_MAX) + ")"
 	match global.current_state:
 		global.GameState.DEALING:
-			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				global.spring_length_animation.set_target(1,200)
-				global.spring_length_animation.play(true)
+			global.camera_controller.ensure_hand_length(200)
 				
 			for player in global.players:
 				player.can_combo = true
@@ -81,14 +79,11 @@ func _process(delta: float) -> void:
 		global.GameState.WAITING:
 			if global.cube_rot_animation.done && global.cube_rot_animation.end_value == 90:
 				global.current_state = global.GameState.COMBOING
-				global.spring_rot_x_animation.set_target(45,200)
-				global.spring_rot_x_animation.play(true)
+				global.camera_controller.focus_hand(200)
 			global.round = global.game_progress - 1;
 			global.cube_desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
 		global.GameState.COMBOING:
-			if global.spring_length_animation.done && global.spring_length_animation.end_value == 3:
-				global.spring_length_animation.set_target(1,200)
-				global.spring_length_animation.play(true)
+			global.camera_controller.ensure_hand_length(200)
 				
 				
 			if global.round > global.game_progress:
@@ -102,8 +97,7 @@ func _process(delta: float) -> void:
 		global.GameState.END:
 			global.cube_desk.global_rotation.z = deg_to_rad(global.cube_rot_animation.value)
 			if global.cube_rot_animation.end_value != 0:
-				global.spring_length_animation.set_target(3,200)
-				global.spring_length_animation.play(true)
+				global.camera_controller.focus_board(200)
 				global.cube_rot_animation.set_target(0,500)
 				global.cube_rot_animation.play(true)
 			

@@ -22,8 +22,7 @@ static var deck :Sprite3D #牌堆(实体)
 static var camera: Camera3D
 static var multi_player_node: CharacterBody3D
 static var cube_desk: MeshInstance3D
-static var spring_length_animation: AnimationUtils = AnimationUtils.new(0,0,0)
-static var spring_rot_x_animation: AnimationUtils = AnimationUtils.new(0,0,0)
+static var camera_controller: CameraController = CameraController.new()
 static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0,0,0)
 # 状态枚举（必须前置声明，放在current_state变量之前）
 enum GameState {
