@@ -87,7 +87,36 @@ func _update(delta: float) -> void:
 	camera_update(delta)
 	
 func _input_event(event: InputEvent) -> void:
-	pass
+	# 在控制器内部处理按键，直接调用switch_state完成切镜
+	if event is InputEventKey:
+		var key_event: InputEventKey = event
+		if key_event.pressed and !key_event.echo:
+			key_down = int(key_event.keycode)
+			match key_event.keycode:
+				KEY_W:
+					switch_state(STATE.Up,240)
+					play_inscryption_shake(0.28,0.12)
+				KEY_S:
+					switch_state(STATE.Down,220)
+					play_inscryption_shake(0.25,0.12)
+				KEY_A:
+					switch_state(STATE.Left,240)
+					play_inscryption_shake(0.22,0.1)
+				KEY_D:
+					switch_state(STATE.Right,240)
+					play_inscryption_shake(0.22,0.1)
+				KEY_Q:
+					switch_state(STATE.Forward,180)
+					play_inscryption_shake(0.35,0.14)
+				KEY_E,KEY_ESCAPE:
+					switch_state(STATE.Normal,220)
+					play_inscryption_shake(0.18,0.09)
+		if !key_event.pressed:
+			# 松开控制键后自动回正，避免卡在侧视角
+			if key_event.keycode in [KEY_W,KEY_S,KEY_A,KEY_D,KEY_Q]:
+				if key_down == int(key_event.keycode):
+					key_down = -999
+					switch_state(STATE.Normal,200)
 		
 func animation_update(delta: float) -> void:
 	is_moving = !spring_length_animation.done || !spring_rot_animation.done
