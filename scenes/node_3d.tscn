@@ -21,8 +21,6 @@ sky = SubResource("Sky_i0g27")
 sdfgi_enabled = true
 glow_enabled = true
 
-
-
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tuemg"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_tuemg"]
