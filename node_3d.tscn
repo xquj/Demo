@@ -1,12 +1,9 @@
 [gd_scene format=3 uid="uid://cox6bf53484ix"]
 
 [ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scripts/GameSense3D.gd" id="1_i5arm"]
-[ext_resource type="Texture2D" uid="uid://26y3xcr6o70b" path="res://textrue/cards/wyrm_family/agni.png" id="4_jka67"]
 [ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
-[ext_resource type="Texture2D" uid="uid://bs6i4cla8k8oj" path="res://textrue/cards/fire_family/asmodeus.png" id="5_i5arm"]
 [ext_resource type="Script" uid="uid://dkx2eooflwwuw" path="res://scripts/interactive/end_watting_button.gd" id="8_jsk3o"]
 [ext_resource type="Script" uid="uid://cycasqqnecjmn" path="res://scripts/interactive/end_combo_button.gd" id="9_4arys"]
-[ext_resource type="Texture2D" uid="uid://d1jm8362lj450" path="res://textrue/cards/fire_family/hestia.png" id="14_3v7ru"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tuemg"]
 sky_top_color = Color(0.67691976, 0.6888882, 0.7596969, 1)
@@ -24,9 +21,7 @@ sky = SubResource("Sky_i0g27")
 sdfgi_enabled = true
 glow_enabled = true
 
-[sub_resource type="BoxMesh" id="BoxMesh_i5arm"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_i5arm"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_tuemg"]
 
@@ -69,95 +64,6 @@ transform = Transform3D(1, 0, 0, 0, 0.7071067, -0.7071067, 0, 0.7071067, 0.70710
 
 [node name="Camera3D" type="Camera3D" parent="LocalPlayer/SpringArm3D" unique_id=945114509]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)
-
-[node name="Cards" type="Node" parent="." unique_id=1379109891]
-
-[node name="Hestia" type="Sprite3D" parent="Cards" unique_id=159389927]
-transform = Transform3D(0.9999999, 0, 0, 0, -4.371139e-08, 0.9999997, 0, -1, -4.3711374e-08, -0.62, 0.067193896, 0)
-visible = false
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("14_3v7ru")
-
-[node name="card_back" type="Sprite3D" parent="Cards/Hestia" unique_id=1596690081]
-transform = Transform3D(1, -2.1316282e-14, -1.0658141e-14, 2.1316282e-14, 0.99999994, -3.5527137e-15, 7.105428e-15, 3.5527137e-15, 1, 0, -1.5641888e-10, -5.184859e-05)
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("4_r3fl7")
-
-[node name="Area3D" type="Area3D" parent="Cards/Hestia" unique_id=101593383]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
-visible = false
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Cards/Hestia/Area3D" unique_id=851639876]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-mesh = SubResource("BoxMesh_i5arm")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Cards/Hestia/Area3D" unique_id=1818790443]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-shape = SubResource("BoxShape3D_i5arm")
-
-[node name="Agni" type="Sprite3D" parent="Cards" unique_id=135442660]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -0.62, 0.067193896, 0)
-visible = false
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("4_jka67")
-
-[node name="card_back" type="Sprite3D" parent="Cards/Agni" unique_id=1566023626]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, -3.5527137e-15, 0, 0, 1, 0, -4.0139225e-11, -8.172542e-05)
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("4_r3fl7")
-
-[node name="Area3D" type="Area3D" parent="Cards/Agni" unique_id=1172157372]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
-visible = false
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Cards/Agni/Area3D" unique_id=1320489222]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-mesh = SubResource("BoxMesh_i5arm")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Cards/Agni/Area3D" unique_id=592791881]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-shape = SubResource("BoxShape3D_i5arm")
-
-[node name="Asmodeus" type="Sprite3D" parent="Cards" unique_id=1130915504]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 0.9999998, 0, -1, -4.371138e-08, -0.62, 0.067193896, 0)
-visible = false
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("5_i5arm")
-
-[node name="card_back" type="Sprite3D" parent="Cards/Asmodeus" unique_id=1491841671]
-transform = Transform3D(1, 0, 0, 0, 0.99999994, -7.1054274e-15, 0, 0, 1, 0, -4.2014392e-11, -3.8824975e-05)
-pixel_size = 0.0001
-transparent = false
-shaded = true
-texture = ExtResource("4_r3fl7")
-
-[node name="Area3D" type="Area3D" parent="Cards/Asmodeus" unique_id=447247618]
-transform = Transform3D(1, -2.1316282e-14, 8.4703295e-22, 1.4210855e-14, 0.99999994, -1.0658141e-14, 0, 7.1054274e-15, 1, 0, 0, -0.001)
-visible = false
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Cards/Asmodeus/Area3D" unique_id=1939342486]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-mesh = SubResource("BoxMesh_i5arm")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Cards/Asmodeus/Area3D" unique_id=1074920971]
-transform = Transform3D(0.176, 4.3711403e-11, 0, 5.3290705e-15, -4.3711392e-11, -0.24, -7.693205e-09, 0.0009999999, -1.0490734e-08, 0, -1.0666525e-09, -0.0013036057)
-visible = false
-shape = SubResource("BoxShape3D_i5arm")
 
 [node name="Scene3D" type="Node3D" parent="." unique_id=1699026656]
 

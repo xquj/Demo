@@ -8,7 +8,7 @@ const DEAL_INTERVAL: int = 30
 
 # 全局帧计数器：用于发牌索引轮转与节奏控制。
 var tick: int = 0
-# 缓存 Cards 容器，避免在 _process 中重复节点查找。
+# 新卡牌工厂：基于卡牌模板场景 + JSON 数据生成卡牌。
 var _card_factory: CardFactory = CardFactory.new()
 
 # 场景入口：绑定全局节点引用并重置本局状态。
@@ -67,11 +67,9 @@ func _hover(m_x: float, m_y: float, x: float, y: float, x1: float, y1: float) ->
 	return m_x >= x and m_x <= x1 and m_y >= y and m_y <= y1
 
 
-# 初始化新卡牌：挂载卡牌脚本、纳入 selected_group、并放入桌面节点。
-func initialize_card(sprite: Sprite3D) -> void:
-	if not (sprite is Card_Base):
-		sprite.set_script(load("res://scripts/card/card_base.gd"))
-	global.selected_group.push_back(sprite)
+# 初始化新卡牌：纳入 selected_group，并放入桌面节点。
+func initialize_card(card: Card_Base) -> void:
+	global.selected_group.push_back(card)
 	var last_card: Card_Base = global.selected_group.back()
 	if last_card.get_parent() == null:
 		global.cube_desk.add_child(last_card)
@@ -252,7 +250,7 @@ func _finished_dealing() -> bool:
 	return global.selected_group.size() >= global.players.size() * 2
 
 
-# 生成下一张卡：按 tick 轮询 Cards 子节点并克隆为可见卡牌。
+# 生成下一张卡：按 tick 节奏从 CardFactory 动态实例化。
 func _spawn_next_card() -> void:
 	var cards_count: int = _card_factory.get_cards_count()
 	if cards_count == 0:
