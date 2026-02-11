@@ -7,7 +7,10 @@
     "cost": 1,
     "selling_price": 2,
     "texture": "res://textrue/cards/fire_family/hestia.png",
-    "keywords": ["starter"]
+    "keywords": [
+      "starter"
+    ],
+    "card_script": "res://scripts/card/custom/hestia_card.gd"
   },
   {
     "id": "agni",
@@ -17,7 +20,9 @@
     "cost": 2,
     "selling_price": 3,
     "texture": "res://textrue/cards/wyrm_family/agni.png",
-    "keywords": ["burn"]
+    "keywords": [
+      "burn"
+    ]
   },
   {
     "id": "asmodeus",
@@ -27,6 +32,8 @@
     "cost": 3,
     "selling_price": 4,
     "texture": "res://textrue/cards/fire_family/asmodeus.png",
-    "keywords": ["boss"]
+    "keywords": [
+      "boss"
+    ]
   }
 ]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scripts/GameSense3D.gd" id="1_i5arm"]
 [ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
-[ext_resource type="Script" uid="uid://dkx2eooflwwuw" path="res://scripts/interactive/end_watting_button.gd" id="8_jsk3o"]
+[ext_resource type="Script" uid="uid://cy7nlspwfliev" path="res://scripts/interactive/end_waiting_button.gd" id="8_jsk3o"]
 [ext_resource type="Script" uid="uid://cycasqqnecjmn" path="res://scripts/interactive/end_combo_button.gd" id="9_4arys"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_tuemg"]

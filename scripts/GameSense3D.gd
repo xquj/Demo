@@ -15,6 +15,7 @@ var _card_factory: CardFactory = CardFactory.new()
 func _ready() -> void:
 	global.game_sense = self
 	_setup_global_references()
+	global.reset_runtime_state(true)
 	_reset_match_state()
 
 
@@ -40,8 +41,13 @@ func _on_sell_button_up() -> void:
 		return
 
 	var card: Card_Base = global.selected_card
-	var player: PlayerEntity = global.players[card.team_id - 1]
-	player.inventory_temporary.add_items(card.selling_price)
+	var player_index: int = card.team_id - 1
+	if player_index < 0 or player_index >= global.players.size():
+		push_warning("GameSense3D: invalid card team id when selling: %s" % str(card.team_id))
+		return
+
+	var player: PlayerEntity = global.players[player_index]
+	player.add_items(card.selling_price)
 	card.switch_state(card.States.DISCARD)
 	global.selected_card = null
 
@@ -54,7 +60,12 @@ func _on_tame_button_up() -> void:
 		return
 
 	var card: Card_Base = global.selected_card
-	var player: PlayerEntity = global.players[card.team_id - 1]
+	var player_index: int = card.team_id - 1
+	if player_index < 0 or player_index >= global.players.size():
+		push_warning("GameSense3D: invalid card team id when taming: %s" % str(card.team_id))
+		return
+
+	var player: PlayerEntity = global.players[player_index]
 	if player.hand_cards.size() >= HAND_CARDS_MAX:
 		return
 
@@ -111,8 +122,11 @@ func _update_camera_and_animations(delta: float) -> void:
 
 # 刷新手牌计数标签（格式：当前/上限）。
 func _update_hand_count_label() -> void:
-	var hand_size: int = global.local_player.hand_cards.size()
-	global.cards_number_label.text = "(%s/%s)" % [str(hand_size), str(HAND_CARDS_MAX)]
+	var hand_size: int = 0
+	if global.local_player != null:
+		hand_size = global.local_player.hand_cards.size()
+	if global.cards_number_label != null:
+		global.cards_number_label.text = "(%s/%s)" % [str(hand_size), str(HAND_CARDS_MAX)]
 
 func _switch_state(state: global.GameState) -> void:
 	if state == global.current_state: return
