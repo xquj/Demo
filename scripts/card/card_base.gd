@@ -9,6 +9,8 @@ var cost: int
 var selling_price: int
 var team_id: int
 var player: PlayerEntity
+var card_id: String
+var keywords: Array[String] = []
 #状态机
 var state: State
 #动画
@@ -50,6 +52,24 @@ func _ready() -> void:
 	duration = 0.0
 	elapsed = 0.0
 	state = DealingState.new(self)
+
+
+func apply_data(card_def: Dictionary) -> void:
+	card_id = str(card_def.get("id", ""))
+	card_name = str(card_def.get("name", ""))
+	family_name = str(card_def.get("family", ""))
+	health = int(card_def.get("health", 0))
+	cost = int(card_def.get("cost", 0))
+	selling_price = int(card_def.get("selling_price", 0))
+	keywords.clear()
+	for keyword in card_def.get("keywords", []):
+		keywords.push_back(str(keyword))
+
+	var texture_path: String = str(card_def.get("texture", ""))
+	if texture_path != "":
+		var front_texture: Texture2D = load(texture_path)
+		if front_texture != null:
+			texture = front_texture
 	
 func _process(delta: float) -> void:
 	state._process(delta)
