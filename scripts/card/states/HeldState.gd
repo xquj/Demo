@@ -79,20 +79,28 @@ func _update_hand_layout() -> void:
 	var index: int = hand_cards.find(card)
 	if index == -1:
 		return
+
+	var hand_parent: Node3D = card.get_parent() as Node3D
+	if hand_parent == null:
+		return
+
 	var t: float = 0.5
 	if count > 1:
 		t = float(index) / float(count - 1)
-	var idx: int = card.player.hand_cards.find(card) + 1
-	var size_: int = card.player.hand_cards.size() / 2
-	var offset: float = 0.1 / maxf(((size_ * 2.0) / 8.0),1.0)
-	base_bottom_local_pos.x = global.camera.global_position.x - (size_ - idx + 1) * offset
+	var spread: float = 0.6
+	var offset_x: float = lerp(-spread * 0.5, spread * 0.5, t)
+	var local_y: float = float(index + 1) * 0.001
+
 	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
-	base_rot.z = -angle_rad
-	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
+	base_rot = Vector3(card.rotation.x, card.rotation.y, -angle_rad)
+
 	var half_height: float = _get_half_height()
+	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
+	base_bottom_local_pos = Vector3(offset_x, local_y, 0.0)
 	base_local_pos = base_bottom_local_pos + new_up * half_height
 	base_pos = _get_parent_global_pos(base_local_pos)
+
 	if !is_entered and !card.moving_ability:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
 			_move_with_rotation(base_pos, base_rot, 0.1, 0.0, MoveMode.LINEAR, 1.0)

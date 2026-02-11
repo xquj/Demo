@@ -100,6 +100,8 @@ func _setup_global_references() -> void:
 	global.held_area2_label = $Scene3D/Desk/HeldArea2
 
 	global.multi_player_node = $MultiPlayer
+	global.local_hand_node = $LocalPlayer/LocalHand
+	global.enemy_hand_node = $MultiPlayer/EnemyHand
 	global.camera = $LocalPlayer/SpringArm3D/Camera3D
 	global.camera_controller = CameraController.new($LocalPlayer/SpringArm3D, $LocalPlayer/SpringArm3D/Camera3D)
 

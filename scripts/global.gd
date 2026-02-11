@@ -21,6 +21,8 @@ static var discard_pile: Sprite3D # 弃牌堆(实体)
 static var deck: Sprite3D # 牌堆(实体)
 static var camera: Camera3D
 static var multi_player_node: CharacterBody3D
+static var local_hand_node: Node3D
+static var enemy_hand_node: Node3D
 static var cube_desk: MeshInstance3D
 static var camera_controller: CameraController
 static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0, 0, 0)

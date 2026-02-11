@@ -65,6 +65,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)
 
 [node name="Scene3D" type="Node3D" parent="." unique_id=1699026656]
 
+[node name="LocalHand" type="Node3D" parent="LocalPlayer" unique_id=204411001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, 2.2)
+
+[node name="EnemyHand" type="Node3D" parent="MultiPlayer" unique_id=204411002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.09, -2.2)
+
 [node name="Desk" type="MeshInstance3D" parent="Scene3D" unique_id=1134808714]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.5, 0)
 mesh = SubResource("BoxMesh_tuemg")
