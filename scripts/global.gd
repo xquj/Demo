@@ -24,7 +24,7 @@ static var multi_player_node: CharacterBody3D
 static var cube_desk: MeshInstance3D
 static var camera_controller: CameraController
 static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0, 0, 0)
-static var game_sense: GameSense3D
+static var game_sense: GameScene3D
 
 # 状态枚举（必须前置声明，放在 current_state 变量之前）
 enum GameState {

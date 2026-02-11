@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cox6bf53484ix"]
 
-[ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scripts/GameSense3D.gd" id="1_i5arm"]
+[ext_resource type="Script" uid="uid://c1klqkbm7ox4p" path="res://scripts/GameScene3D.gd" id="1_i5arm"]
 [ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="4_r3fl7"]
 [ext_resource type="Script" uid="uid://cy7nlspwfliev" path="res://scripts/interactive/end_waiting_button.gd" id="8_jsk3o"]
 [ext_resource type="Script" uid="uid://cycasqqnecjmn" path="res://scripts/interactive/end_combo_button.gd" id="9_4arys"]
@@ -39,7 +39,7 @@ size = Vector3(0.1, 0.1, 0.1)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_wc5p8"]
 
-[node name="Node3D" type="Node3D" unique_id=1713464870]
+[node name="GameScene" type="Node3D" unique_id=1713464870]
 script = ExtResource("1_i5arm")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=795584574]
@@ -59,6 +59,9 @@ transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, -
 
 [node name="SpringArm3D" type="SpringArm3D" parent="LocalPlayer" unique_id=525352436]
 transform = Transform3D(1, 0, 0, 0, 0.7071067, -0.7071067, 0, 0.7071067, 0.7071067, 0, 0, 0)
+
+[node name="Hand" type="Node3D" parent="LocalPlayer/SpringArm3D" unique_id=840609945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1837659, 1.9222348)
 
 [node name="Camera3D" type="Camera3D" parent="LocalPlayer/SpringArm3D" unique_id=945114509]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.606, 2.5)

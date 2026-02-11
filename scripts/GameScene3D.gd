@@ -1,5 +1,5 @@
 extends Node3D
-class_name GameSense3D
+class_name GameScene3D
 # ====================【常量与缓存】====================
 # 手牌上限（用于“驯服”动作时的容量判断，以及 UI 显示）。
 const HAND_CARDS_MAX: int = 14
