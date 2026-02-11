@@ -8,8 +8,8 @@ const DEAL_INTERVAL: int = 30
 
 # 全局帧计数器：用于发牌索引轮转与节奏控制。
 var tick: int = 0
-# 缓存 Cards 容器，避免在 _process 中重复节点查找。
-var _cards_node: Node = null
+# 缓存卡牌工厂：统一通过模板 + 数据配置生成卡牌。
+var _card_factory: CardFactory = CardFactory.new()
 
 # 场景入口：绑定全局节点引用并重置本局状态。
 func _ready() -> void:
@@ -67,10 +67,9 @@ func _hover(m_x: float, m_y: float, x: float, y: float, x1: float, y1: float) ->
 	return m_x >= x and m_x <= x1 and m_y >= y and m_y <= y1
 
 
-# 初始化新卡牌：挂载卡牌脚本、纳入 selected_group、并放入桌面节点。
-func initialize_card(sprite: Sprite3D) -> void:
-	sprite.set_script(load("res://scripts/card/card_base.gd"))
-	global.selected_group.push_back(sprite)
+# 初始化新卡牌：纳入 selected_group、并放入桌面节点。
+func initialize_card(card: Card_Base) -> void:
+	global.selected_group.push_back(card)
 	var last_card: Card_Base = global.selected_group.back()
 	if last_card.get_parent() == null:
 		global.cube_desk.add_child(last_card)
@@ -93,7 +92,6 @@ func _setup_global_references() -> void:
 	global.camera = $LocalPlayer/SpringArm3D/Camera3D
 	global.camera_controller = CameraController.new($LocalPlayer/SpringArm3D, $LocalPlayer/SpringArm3D/Camera3D)
 
-	_cards_node = $Cards
 
 
 # 重置对局进度与旋转动画初始状态。
@@ -252,19 +250,17 @@ func _finished_dealing() -> bool:
 	return global.selected_group.size() >= global.players.size() * 2
 
 
-# 生成下一张卡：按 tick 轮询 Cards 子节点并克隆为可见卡牌。
+# 生成下一张卡：按 tick 轮询数据配置并通过模板场景实例化。
 func _spawn_next_card() -> void:
-	if _cards_node == null:
-		return
-
-	var cards_count: int = _cards_node.get_child_count()
+	var cards_count: int = _card_factory.get_cards_count()
 	if cards_count == 0:
 		return
 
 	var card_index: int = (tick / DEAL_INTERVAL) % cards_count
-	var source_sprite: Sprite3D = _cards_node.get_child(card_index).duplicate()
-	source_sprite.visible = true
-	initialize_card(source_sprite)
+	var card: Card_Base = _card_factory.create_card_by_index(card_index)
+	if card == null:
+		return
+	initialize_card(card)
 
 
 # 根据 round 与 game_progress 计算活跃玩家，并同步到 global.player_activity。
