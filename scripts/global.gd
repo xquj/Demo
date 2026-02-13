@@ -212,6 +212,8 @@ static var event_bus: EventBus:
 	set(value):
 		scene_refs.event_bus = value
 
+static var diagnostics_enabled: bool = false
+
 static func reset_runtime_state(preserve_players: bool = false) -> void:
 	selected_group = []
 	discard_group = []
@@ -231,3 +233,7 @@ static func is_transitional_state() -> bool:
 		or current_state == GameState.TO_SELECTING \
 		or current_state == GameState.TO_WAITING \
 		or current_state == GameState.TO_COMBOING
+
+static func debug_log(message: String) -> void:
+	if diagnostics_enabled:
+		print("[DEBUG] %s" % message)

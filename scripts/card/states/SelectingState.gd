@@ -8,18 +8,29 @@ var is_entered: bool
 var start_pos: Vector3
 
 func enter() -> void:
+	super.enter()
 	for child in card.get_children():
 		if child as Area3D:
 			area = child
 			break
 	if area != null:
-		area.mouse_entered.connect(func(): mouse_entered(true))
-		area.mouse_exited.connect(func(): mouse_entered(false))
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if not area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.connect(on_entered)
+		if not area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.connect(on_exited)
 	start_pos = card.global_position
 
 func exit() -> void:
 	super.exit()
 	if area != null:
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.disconnect(on_entered)
+		if area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.disconnect(on_exited)
 		area.visible = false
 	card.set_color(card.original_modulate, 100)
 	if global.game_sense != null:
@@ -49,3 +60,9 @@ func mouse_entered(entered: bool) -> void:
 	else:
 		card.set_color(card.original_modulate, 100)
 		_move(Vector3(start_pos.x, start_pos.y, start_pos.z), 0.1, 0, 1)
+
+func _on_area_mouse_entered() -> void:
+	mouse_entered(true)
+
+func _on_area_mouse_exited() -> void:
+	mouse_entered(false)

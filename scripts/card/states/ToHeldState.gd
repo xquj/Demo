@@ -3,29 +3,39 @@ class_name ToHeldState
 
 func enter() -> void:
 	super.enter()
-	card.player.hand_cards.push_back(card)
+	if card.player == null:
+		push_warning("ToHeldState: card.player is null, skip transition.")
+		return
+	if card.player != null and not card.player.hand_cards.has(card):
+		card.player.hand_cards.push_back(card)
 	var idx = card.player.hand_cards.find(card) + 1
 
-	var target_pos: Vector3
-	var target_rot: Vector3
-	var is_local: bool = card.team_id == global.local_player.team_id
+	var target: Dictionary = SceneLayoutSystem.get_to_held_target(card, idx)
+	var target_pos: Vector3 = target.get("position", card.global_position)
+	var target_rot: Vector3 = target.get("rotation", card.rotation)
+	var target_parent: Node = target.get("parent")
+	var duration: float = float(target.get("duration", HandLayoutConfig.TO_HELD_DURATION))
+	if target_parent != null:
+		card.reparent(target_parent)
 
-	if is_local:
-		target_rot = Vector3(deg_to_rad(-15.0), 0.0, 0.0)
-		target_pos = Vector3(global.camera.global_position.x, global.camera.global_position.y - 0.6 + idx * 0.001, global.camera.global_position.z - 0.1 + idx * 0.001)
-		var local_parent: Node = global.local_hand_anchor if global.local_hand_anchor != null else global.camera
-		card.reparent(local_parent)
-	else:
-		var remote_anchor: Node3D = global.remote_hand_anchor if global.remote_hand_anchor != null else global.multi_player_node
-		target_pos = Vector3(remote_anchor.global_position.x, remote_anchor.global_position.y + idx * 0.001, remote_anchor.global_position.z + idx * 0.001)
-		target_rot = Vector3(deg_to_rad(-125.0), deg_to_rad(180.0), 0.0)
-		var remote_parent: Node = global.remote_hand_anchor if global.remote_hand_anchor != null else global.multi_player_node
-		card.reparent(remote_parent)
+	global.debug_log(
+		"ToHeldState.enter: card=%s team=%s idx=%s rot=(%.2f, %.2f, %.2f)" % [
+			card.card_id,
+			str(card.team_id),
+			str(idx),
+			rad_to_deg(target_rot.x),
+			rad_to_deg(target_rot.y),
+			rad_to_deg(target_rot.z)
+		]
+	)
+
 	_move_with_control_rotation(target_pos,
-	Vector3((card.start_pos.x + target_pos.x) / 2,target_pos.y,(card.start_pos.z + target_pos.z) / 2),target_rot,0.2)
+	Vector3((card.start_pos.x + target_pos.x) / 2, target_pos.y, (card.start_pos.z + target_pos.z) / 2), target_rot, duration)
 
 func exit() -> void:
 	super.exit()
+	if card.player == null:
+		return
 	if card.player.waitingGroup.has(card):
 		card.player.waitingGroup.remove_at(card.player.waitingGroup.find(card))
 

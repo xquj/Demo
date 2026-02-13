@@ -10,15 +10,6 @@ var base_rot_origin: Vector3
 var base_bottom_local_pos: Vector3
 var base_bottom_local_origin: Vector3
 
-const HOVER_HEIGHT: float = 0.04
-const HOVER_FORWARD: float = 0.02
-const HOVER_ROT_DEG: float = 0.005
-const HOVER_DURATION: float = 0.12
-const FAN_SPREAD_DEG: float = 14.0
-const FAN_CARD_SPACING: float = 0.1
-const FAN_CENTER_RISE: float = 0.02
-const FAN_EDGE_DROP: float = 0.005
-
 func enter() -> void:
 	super.enter()
 	for child in card.get_children():
@@ -26,20 +17,31 @@ func enter() -> void:
 			area = child
 			break
 	if area != null:
-		area.mouse_entered.connect(func():mouse_entered(true))
-		area.mouse_exited.connect(func():mouse_entered(false))
-		area.visible = _is_local_owned_card()
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if not area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.connect(on_entered)
+		if not area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.connect(on_exited)
+		area.visible = CardViewPolicy.should_show_interaction_area(card)
 	base_local_pos = card.position
 	base_pos = card.global_position
 	base_rot = card.rotation
 	base_rot_origin = card.rotation
-	base_bottom_local_origin = _get_bottom_anchor_pos(base_local_pos, card.transform.basis)
+	base_bottom_local_origin = SceneLayoutSystem.get_bottom_anchor_pos(card, base_local_pos, card.transform.basis)
 	base_bottom_local_origin.x = 0.0
 	base_bottom_local_pos = base_bottom_local_origin
+	global.debug_log("HeldState.enter: card=%s team=%s" % [card.card_id, str(card.team_id)])
 
 func exit() -> void:
 	super.exit()
 	if area != null:
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.disconnect(on_entered)
+		if area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.disconnect(on_exited)
 		area.visible = false
 	card.set_color(card.original_modulate,100)
 
@@ -49,7 +51,7 @@ func update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	super.handle_input(event)
-	if not _is_local_owned_card():
+	if not CardViewPolicy.is_local_owned_card(card):
 		return
 	if event is InputEventMouseButton:
 		if event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
@@ -57,7 +59,7 @@ func handle_input(event: InputEvent) -> void:
 				pass
 
 func mouse_entered(entered: bool) -> void:
-	if not _is_local_owned_card():
+	if not CardViewPolicy.is_local_owned_card(card):
 		return
 	if card.state != self or area == null or !area.visible or global.is_transitional_state():
 		return
@@ -65,15 +67,16 @@ func mouse_entered(entered: bool) -> void:
 	if entered:
 		card.set_color(Color(0.75, 0.75, 0.75, 1.0),100)
 		var forward: Vector3 = -Vector3.FORWARD
-		var target_pos: Vector3 = _get_parent_global_pos(
-			base_local_pos + Vector3(0.0, HOVER_HEIGHT, 0.0) + forward * HOVER_FORWARD
+		var target_pos: Vector3 = SceneLayoutSystem.to_parent_global(
+			card,
+			base_local_pos + Vector3(0.0, HandLayoutConfig.HOVER_HEIGHT, 0.0) + forward * HandLayoutConfig.HOVER_FORWARD
 		)
-		var target_rot: Vector3 = base_rot + Vector3(deg_to_rad(-HOVER_ROT_DEG), 0.0, 0.0)
-		_move_with_rotation(target_pos, target_rot, HOVER_DURATION, 0.0, MoveMode.LINEAR, 1.0)
+		var target_rot: Vector3 = base_rot + Vector3(deg_to_rad(-HandLayoutConfig.HOVER_ROT_DEG), 0.0, 0.0)
+		_move_with_rotation(target_pos, target_rot, HandLayoutConfig.HOVER_DURATION, 0.0, MoveMode.LINEAR, 1.0)
 	else:
 		card.set_color(card.original_modulate,100)
-		var target_pos: Vector3 = _get_parent_global_pos(base_local_pos)
-		_move_with_rotation(target_pos, base_rot, HOVER_DURATION, 0.0, MoveMode.LINEAR, 1.0)
+		var target_pos: Vector3 = SceneLayoutSystem.to_parent_global(card, base_local_pos)
+		_move_with_rotation(target_pos, base_rot, HandLayoutConfig.HOVER_DURATION, 0.0, MoveMode.LINEAR, 1.0)
 
 func _update_hand_layout() -> void:
 	if card == null or card.player == null:
@@ -85,61 +88,23 @@ func _update_hand_layout() -> void:
 	var index: int = hand_cards.find(card)
 	if index == -1:
 		return
-	var center_index: float = float(count - 1) * 0.5
-	var slot: float = float(index) - center_index
-	var fan_offset_sign: float = _get_fan_offset_sign()
-	var fan_rotation_sign: float = _get_fan_rotation_sign()
-	var spread_scale: float = maxf(float(count) / 8.0, 1.0)
-	var offset: float = FAN_CARD_SPACING / spread_scale
-	var slot_denom: float = maxf(center_index, 1.0)
-	var slot_norm: float = absf(slot) / slot_denom
-	var arc_factor: float = 1.0 - clampf(slot_norm, 0.0, 1.0)
-	var t: float = 0.5
-	if count > 1:
-		t = float(index) / float(count - 1)
-	base_bottom_local_pos.x = base_bottom_local_origin.x + slot * offset * fan_offset_sign
-	base_bottom_local_pos.y = base_bottom_local_origin.y + lerp(-FAN_EDGE_DROP, FAN_CENTER_RISE, arc_factor)
-	base_rot = base_rot_origin
-	base_rot.x = _get_hand_tilt_x()
-	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
-	var angle_rad: float = deg_to_rad(angle_deg)
-	base_rot.z = -angle_rad * fan_rotation_sign
-	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
-	var half_height: float = _get_half_height()
-	base_local_pos = base_bottom_local_pos + new_up * half_height
-	base_pos = _get_parent_global_pos(base_local_pos)
+	var layout: Dictionary = SceneLayoutSystem.calculate_held_layout(
+		card,
+		index,
+		count,
+		base_bottom_local_origin,
+		base_rot_origin
+	)
+	base_local_pos = layout.get("local_pos", base_local_pos)
+	base_bottom_local_pos = layout.get("bottom_local_pos", base_bottom_local_pos)
+	base_rot = layout.get("rotation", base_rot)
+	base_pos = layout.get("global_pos", base_pos)
 	if !is_entered and !card.moving_ability:
 		if card.global_position.distance_to(base_pos) > 0.0001 or card.rotation != base_rot:
 			_move_with_rotation(base_pos, base_rot, 0.1, 0.0, MoveMode.LINEAR, 1.0)
 
-func _get_half_height() -> float:
-	if card == null or card.texture == null:
-		return 0.0
-	return card.texture.get_size().y * card.pixel_size * card.scale.y * 0.5
+func _on_area_mouse_entered() -> void:
+	mouse_entered(true)
 
-func _get_bottom_anchor_pos(center_pos: Vector3, basis: Basis) -> Vector3:
-	return center_pos - basis.y.normalized() * _get_half_height()
-
-func _get_parent_global_pos(local_pos: Vector3) -> Vector3:
-	if card == null:
-		return local_pos
-	var parent: Node3D = card.get_parent() as Node3D
-	if parent == null:
-		return local_pos
-	return parent.to_global(local_pos)
-
-func _get_fan_offset_sign() -> float:
-	if card == null or global.local_player == null:
-		return 1.0
-	return 1.0 if card.team_id == global.local_player.team_id else -1.0
-
-func _get_fan_rotation_sign() -> float:
-	return 1.0
-
-func _get_hand_tilt_x() -> float:
-	if card == null or global.local_player == null:
-		return deg_to_rad(-15.0)
-	return deg_to_rad(-15.0) if card.team_id == global.local_player.team_id else deg_to_rad(-125.0)
-
-func _is_local_owned_card() -> bool:
-	return card != null and card.player != null and global.local_player != null and card.player == global.local_player
+func _on_area_mouse_exited() -> void:
+	mouse_entered(false)

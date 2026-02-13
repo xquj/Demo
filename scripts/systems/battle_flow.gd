@@ -21,15 +21,19 @@ func request_state_change(state: global.GameState) -> bool:
 		return false
 	match state:
 		global.GameState.DEALING:
+			global.debug_log("BattleFlow: request state DEALING")
 			_init_dealing_state()
 			return true
 		global.GameState.SELECTING:
+			global.debug_log("BattleFlow: request state SELECTING")
 			_init_selecting_state()
 			return true
 		global.GameState.WAITING:
+			global.debug_log("BattleFlow: request state WAITING")
 			_init_waiting_state()
 			return true
 		global.GameState.COMBOING:
+			global.debug_log("BattleFlow: request state COMBOING")
 			_init_comboing_state()
 			return true
 		_:
@@ -206,6 +210,23 @@ func _update_player_activity() -> void:
 			player.is_active = true
 		global.player_activity = global.players[0]
 		return
+
+	if global.current_state == global.GameState.SELECTING:
+		var total_picks: int = players_size * 2
+		var committed_picks: int = clampi(total_picks - global.selected_group.size(), 0, total_picks - 1)
+		var snake_index: int = committed_picks
+		if committed_picks >= players_size:
+			snake_index = total_picks - 1 - committed_picks
+		var start_index: int = posmod(global.game_progress - 1, players_size)
+		var active_index: int = posmod(start_index + snake_index, players_size)
+		var active_player_selecting: PlayerEntity = global.players[active_index]
+		for player in global.players:
+			var is_active_selecting: bool = player == active_player_selecting
+			player.is_active = is_active_selecting
+			if is_active_selecting:
+				global.player_activity = player
+		return
+
 	var active_team_id: int = posmod(global.round, players_size) + 1
 	for player in global.players:
 		var is_active: bool = player.team_id == active_team_id

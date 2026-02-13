@@ -5,6 +5,11 @@ const WAITING_STATE_SCRIPT: Script = preload("res://scripts/card/states/WaitingS
 
 func enter() -> void:
 	super.enter()
+	if card.player != null:
+		if card.player.hand_cards.has(card):
+			card.player.hand_cards.remove_at(card.player.hand_cards.find(card))
+		if not card.player.waitingGroup.has(card):
+			card.player.waitingGroup.push_back(card)
 	var idx := card.player.waitingGroup.find(card) + 1
 	var target_pos := Vector3(global.wait_area1_label.global_position.x + 0.25 + idx * 0.3, global.wait_area1_label.global_position.y + 0.01, global.wait_area1_label.global_position.z)
 	if card.team_id != global.local_player.team_id:

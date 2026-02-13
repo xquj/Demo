@@ -14,14 +14,24 @@ func enter() -> void:
 			area = child
 			break
 	if area != null:
-		area.mouse_entered.connect(func(): mouse_entered(true))
-		area.mouse_exited.connect(func(): mouse_entered(false))
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if not area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.connect(on_entered)
+		if not area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.connect(on_exited)
 		area.visible = _is_local_owned_card()
 	start_pos = card.global_position
 
 func exit() -> void:
 	super.exit()
 	if area != null:
+		var on_entered: Callable = Callable(self, "_on_area_mouse_entered")
+		var on_exited: Callable = Callable(self, "_on_area_mouse_exited")
+		if area.mouse_entered.is_connected(on_entered):
+			area.mouse_entered.disconnect(on_entered)
+		if area.mouse_exited.is_connected(on_exited):
+			area.mouse_exited.disconnect(on_exited)
 		area.visible = false
 	card.set_color(card.original_modulate, 100)
 
@@ -54,3 +64,9 @@ func mouse_entered(entered: bool) -> void:
 
 func _is_local_owned_card() -> bool:
 	return card != null and card.player != null and global.local_player != null and card.player == global.local_player
+
+func _on_area_mouse_entered() -> void:
+	mouse_entered(true)
+
+func _on_area_mouse_exited() -> void:
+	mouse_entered(false)
