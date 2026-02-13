@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[node name="RemotePlayerRoot" type="Node3D"]
+
+[node name="PlayerModel" type="Node3D" parent="."]
+
+[node name="Hand" type="Node3D" parent="."]
+position = Vector3(0, 0.01, 0.0)
+
+[node name="BoardAnchor" type="Node3D" parent="."]
+
+[node name="WaitAnchor" type="Node3D" parent="BoardAnchor"]
+position = Vector3(-0.523, 0.008, -0.395)
+
+[node name="HeldAnchor" type="Node3D" parent="BoardAnchor"]
+position = Vector3(-0.125, 0.010, 0.0)
+
+[node name="EffectAnchor" type="Node3D" parent="BoardAnchor"]
+
+[node name="Interaction" type="Node3D" parent="."]
+
+[node name="UIAnchor" type="Node3D" parent="."]

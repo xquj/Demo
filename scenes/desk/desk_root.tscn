@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://2ue8fnfj1ws2"]
+
+[ext_resource type="Texture2D" uid="uid://cxxrldmpk3lhu" path="res://textrue/cards/card_back.png" id="1_card_back"]
+[ext_resource type="Script" uid="uid://cy7nlspwfliev" path="res://scripts/interactive/end_waiting_button.gd" id="2_end_waiting"]
+[ext_resource type="Script" uid="uid://cycasqqnecjmn" path="res://scripts/interactive/end_combo_button.gd" id="3_end_combo"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_desk"]
+size = Vector3(3, 3, 3)
+
+[sub_resource type="BoxMesh" id="BoxMesh_button"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_button"]
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pile_body"]
+albedo_color = Color(0.19, 0.16, 0.12, 1)
+roughness = 0.72
+
+[sub_resource type="BoxMesh" id="BoxMesh_pile_body"]
+material = SubResource("StandardMaterial3D_pile_body")
+size = Vector3(0.238, 0.03, 0.178)
+
+[node name="DeskRoot" type="MeshInstance3D" unique_id=108322775]
+mesh = SubResource("BoxMesh_desk")
+
+[node name="Interactive" type="Node3D" parent="." unique_id=290574894]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0050066113)
+
+[node name="EndWaiting" type="MeshInstance3D" parent="Interactive" unique_id=1855154946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7945567, 1.5419137, 0.37455297)
+mesh = SubResource("BoxMesh_button")
+script = ExtResource("2_end_waiting")
+
+[node name="Area3D" type="Area3D" parent="Interactive/EndWaiting" unique_id=2047806382]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactive/EndWaiting/Area3D" unique_id=1104038853]
+shape = SubResource("BoxShape3D_button")
+
+[node name="EndCombo" type="MeshInstance3D" parent="Interactive" unique_id=1385812261]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5536989, 0.8419405, 0.28806573)
+mesh = SubResource("BoxMesh_button")
+script = ExtResource("3_end_combo")
+
+[node name="Area3D" type="Area3D" parent="Interactive/EndCombo" unique_id=1192509871]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interactive/EndCombo/Area3D" unique_id=535457007]
+shape = SubResource("BoxShape3D_button")
+
+[node name="Piles" type="Node3D" parent="." unique_id=273094558]
+
+[node name="Deck" type="Sprite3D" parent="Piles" unique_id=1822930648]
+transform = Transform3D(0.9999999, 0, -4.371138e-08, 4.3711378e-08, 1.910685e-15, 0.9999997, 0, -0.9999997, 1.9106848e-15, -0.61900973, 1.5524178, 0.0050066113)
+pixel_size = 0.0001
+texture = ExtResource("1_card_back")
+
+[node name="PileBody" type="MeshInstance3D" parent="Piles/Deck" unique_id=749515750]
+transform = Transform3D(1.9106859e-15, 4.3711392e-08, 0.99999994, 0.9999995, -4.3711363e-08, -3.7865323e-29, 4.3711363e-08, 0.9999996, -4.3711385e-08, 0, 0.00045460323, -0.016228676)
+mesh = SubResource("BoxMesh_pile_body")
+
+[node name="DiscardPile" type="Sprite3D" parent="Piles" unique_id=1165530840]
+transform = Transform3D(1.910685e-15, -4.371137e-08, 0.99999964, -0.9999998, -4.371137e-08, 0, 4.371138e-08, -0.9999996, -4.3711374e-08, 1.5312086, -1.2189908, 0.0050066113)
+pixel_size = 0.0001
+texture = ExtResource("1_card_back")
+
+[node name="PileBody" type="MeshInstance3D" parent="Piles/DiscardPile" unique_id=974230042]
+transform = Transform3D(1.9106853e-15, 4.3711385e-08, 1, 0.9999997, -4.3711374e-08, 2.1175824e-22, 4.3711374e-08, 0.9999997, -4.3711374e-08, 0, -0.0012121978, -0.020358562)
+mesh = SubResource("BoxMesh_pile_body")
+
+[node name="Zones" type="Node3D" parent="." unique_id=1562242927]
+
+[node name="WaitArea1" type="Label3D" parent="Zones" unique_id=1928545948]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -0.523, 1.5078853, 0.4050066)
+text = "WaitArea1"
+font_size = 18
+
+[node name="WaitArea2" type="Label3D" parent="Zones" unique_id=977961545]
+transform = Transform3D(-1, 8.742278e-08, 3.5527137e-15, 0, -4.371139e-08, 1, 8.742278e-08, 1, 4.371139e-08, -0.523, 1.5078853, -0.3949934)
+text = "WaitArea2"
+font_size = 18
+
+[node name="ShowArea" type="Label3D" parent="Zones" unique_id=1926198881]
+transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.51, 0, -0.009993374)
+text = "ShowArea"
+font_size = 18
+
+[node name="HeldArea1" type="Label3D" parent="Zones" unique_id=1330248396]
+transform = Transform3D(-4.371139e-08, -4.371139e-08, 1, -1, 1.9106855e-15, -4.371139e-08, 0, -1, -4.371139e-08, 1.508, 0.714, 0.45500666)
+text = "HeldArea1"
+font_size = 18
+
+[node name="CardsNumber" type="Label3D" parent="Zones/HeldArea1" unique_id=1688848432]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.104, 0)
+text = "(14/14)"
+font_size = 12
+outline_size = 4
+
+[node name="HeldArea2" type="Label3D" parent="Zones" unique_id=1435017774]
+transform = Transform3D(4.371139e-08, -4.3711392e-08, 1, 1, -8.7422784e-08, -4.3711392e-08, 8.742278e-08, 1, 4.371139e-08, 1.508, 0.714, -0.44499338)
+text = "HeldArea2"
+font_size = 18
+
+[connection signal="mouse_entered" from="Interactive/EndWaiting/Area3D" to="Interactive/EndWaiting" method="_on_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="Interactive/EndWaiting/Area3D" to="Interactive/EndWaiting" method="_on_area_3d_mouse_exited"]
+[connection signal="mouse_entered" from="Interactive/EndCombo/Area3D" to="Interactive/EndCombo" method="_on_area_3d_mouse_entered"]
+[connection signal="mouse_exited" from="Interactive/EndCombo/Area3D" to="Interactive/EndCombo" method="_on_area_3d_mouse_exited"]

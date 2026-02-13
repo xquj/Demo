@@ -1,23 +1,26 @@
 extends State
 class_name HeldState
 
-
 var area: Area3D
 var is_entered: bool
 var base_local_pos: Vector3
 var base_pos: Vector3
 var base_rot: Vector3
+var base_rot_origin: Vector3
 var base_bottom_local_pos: Vector3
+var base_bottom_local_origin: Vector3
 
 const HOVER_HEIGHT: float = 0.04
 const HOVER_FORWARD: float = 0.02
 const HOVER_ROT_DEG: float = 0.005
 const HOVER_DURATION: float = 0.12
 const FAN_SPREAD_DEG: float = 14.0
+const FAN_CARD_SPACING: float = 0.1
+const FAN_CENTER_RISE: float = 0.02
+const FAN_EDGE_DROP: float = 0.005
 
 func enter() -> void:
 	super.enter()
-	#区域初始化
 	for child in card.get_children():
 		if child as Area3D:
 			area = child
@@ -25,32 +28,37 @@ func enter() -> void:
 	if area != null:
 		area.mouse_entered.connect(func():mouse_entered(true))
 		area.mouse_exited.connect(func():mouse_entered(false))
-		area.visible = true
+		area.visible = _is_local_owned_card()
 	base_local_pos = card.position
 	base_pos = card.global_position
 	base_rot = card.rotation
-	base_bottom_local_pos = _get_bottom_anchor_pos(base_local_pos, card.transform.basis)
-	
+	base_rot_origin = card.rotation
+	base_bottom_local_origin = _get_bottom_anchor_pos(base_local_pos, card.transform.basis)
+	base_bottom_local_origin.x = 0.0
+	base_bottom_local_pos = base_bottom_local_origin
+
 func exit() -> void:
 	super.exit()
 	if area != null:
 		area.visible = false
 	card.set_color(card.original_modulate,100)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func update(delta: float) -> void:
 	super.update(delta)
 	_update_hand_layout()
 
 func handle_input(event: InputEvent) -> void:
 	super.handle_input(event)
+	if not _is_local_owned_card():
+		return
 	if event is InputEventMouseButton:
 		if event.is_released() and event.button_index == MOUSE_BUTTON_LEFT:
 			if _is_move_finished() and is_entered:
 				pass
-				#transition_to(load("res://scripts/card/states/ToWaitState.gd"))
-	
+
 func mouse_entered(entered: bool) -> void:
+	if not _is_local_owned_card():
+		return
 	if card.state != self or area == null or !area.visible or global.is_transitional_state():
 		return
 	is_entered = entered
@@ -70,8 +78,6 @@ func mouse_entered(entered: bool) -> void:
 func _update_hand_layout() -> void:
 	if card == null or card.player == null:
 		return
-	if card.team_id != global.local_player.team_id:
-		return
 	var hand_cards: Array = card.player.hand_cards
 	var count: int = hand_cards.size()
 	if count == 0:
@@ -79,16 +85,25 @@ func _update_hand_layout() -> void:
 	var index: int = hand_cards.find(card)
 	if index == -1:
 		return
+	var center_index: float = float(count - 1) * 0.5
+	var slot: float = float(index) - center_index
+	var fan_offset_sign: float = _get_fan_offset_sign()
+	var fan_rotation_sign: float = _get_fan_rotation_sign()
+	var spread_scale: float = maxf(float(count) / 8.0, 1.0)
+	var offset: float = FAN_CARD_SPACING / spread_scale
+	var slot_denom: float = maxf(center_index, 1.0)
+	var slot_norm: float = absf(slot) / slot_denom
+	var arc_factor: float = 1.0 - clampf(slot_norm, 0.0, 1.0)
 	var t: float = 0.5
 	if count > 1:
 		t = float(index) / float(count - 1)
-	var idx: int = card.player.hand_cards.find(card) + 1
-	var size_: int = card.player.hand_cards.size() / 2
-	var offset: float = 0.1 / maxf(((size_ * 2.0) / 8.0),1.0)
-	base_bottom_local_pos.x = global.camera.global_position.x - (size_ - idx + 1) * offset
+	base_bottom_local_pos.x = base_bottom_local_origin.x + slot * offset * fan_offset_sign
+	base_bottom_local_pos.y = base_bottom_local_origin.y + lerp(-FAN_EDGE_DROP, FAN_CENTER_RISE, arc_factor)
+	base_rot = base_rot_origin
+	base_rot.x = _get_hand_tilt_x()
 	var angle_deg: float = lerp(-FAN_SPREAD_DEG * 0.5, FAN_SPREAD_DEG * 0.5, t)
 	var angle_rad: float = deg_to_rad(angle_deg)
-	base_rot.z = -angle_rad
+	base_rot.z = -angle_rad * fan_rotation_sign
 	var new_up: Vector3 = Basis.from_euler(base_rot).y.normalized()
 	var half_height: float = _get_half_height()
 	base_local_pos = base_bottom_local_pos + new_up * half_height
@@ -112,3 +127,19 @@ func _get_parent_global_pos(local_pos: Vector3) -> Vector3:
 	if parent == null:
 		return local_pos
 	return parent.to_global(local_pos)
+
+func _get_fan_offset_sign() -> float:
+	if card == null or global.local_player == null:
+		return 1.0
+	return 1.0 if card.team_id == global.local_player.team_id else -1.0
+
+func _get_fan_rotation_sign() -> float:
+	return 1.0
+
+func _get_hand_tilt_x() -> float:
+	if card == null or global.local_player == null:
+		return deg_to_rad(-15.0)
+	return deg_to_rad(-15.0) if card.team_id == global.local_player.team_id else deg_to_rad(-125.0)
+
+func _is_local_owned_card() -> bool:
+	return card != null and card.player != null and global.local_player != null and card.player == global.local_player

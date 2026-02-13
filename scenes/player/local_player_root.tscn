@@ -1,0 +1,23 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/camera/camera_rig.tscn" id="1_camera_rig"]
+
+[node name="LocalPlayerRoot" type="Node3D"]
+
+[node name="PlayerModel" type="Node3D" parent="."]
+
+[node name="CameraRig" parent="." instance=ExtResource("1_camera_rig")]
+
+[node name="BoardAnchor" type="Node3D" parent="."]
+
+[node name="WaitAnchor" type="Node3D" parent="BoardAnchor"]
+position = Vector3(-0.523, 0.008, 0.405)
+
+[node name="HeldAnchor" type="Node3D" parent="BoardAnchor"]
+position = Vector3(1.508, -0.786, 0.455)
+
+[node name="EffectAnchor" type="Node3D" parent="BoardAnchor"]
+
+[node name="Interaction" type="Node3D" parent="."]
+
+[node name="UIAnchor" type="Node3D" parent="."]

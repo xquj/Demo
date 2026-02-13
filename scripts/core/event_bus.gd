@@ -1,0 +1,5 @@
+extends Object
+class_name EventBus
+
+signal end_waiting_requested
+signal end_combo_requested

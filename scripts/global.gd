@@ -1,42 +1,216 @@
 class_name global
 
-static var selected_group: Array[Card_Base] = [] # 选择卡牌组
-static var discard_group: Array[Card_Base] = [] # 丢弃的卡牌组
-static var players: Array[PlayerEntity] = [] # 玩家列表
-static var player_activity: PlayerEntity = null # 活跃玩家
-static var local_player: PlayerEntity = null # 本地玩家
-static var current_play_turn: int = 0 # 玩家出牌回合数 第(current_play_turn % 玩家数)位出牌
-static var round: int = 0 # 回合数
-static var game_progress: int = 1 # 游戏进度 n/10
-static var detailed_card: Card_Base = null # 详细介绍的卡牌(用于 card_info_panel.gd)
-static var current_state: global.GameState = GameState.DEALING # 默认初始状态为发牌
-static var selected_card: Card_Base = null # 选择的卡牌
-static var cards_number_label: Label3D # 卡牌信息面板
-static var showing_area_label: Label3D # 展示区域字体
-static var wait_area1_label: Label3D # 区域字体
-static var wait_area2_label: Label3D # 区域字体
-static var held_area1_label: Label3D # 区域字体
-static var held_area2_label: Label3D # 区域字体
-static var discard_pile: Sprite3D # 弃牌堆(实体)
-static var deck: Sprite3D # 牌堆(实体)
-static var camera: Camera3D
-static var multi_player_node: CharacterBody3D
-static var cube_desk: MeshInstance3D
-static var camera_controller: CameraController
-static var cube_rot_animation: AnimationUtils = AnimationUtils.new(0, 0, 0)
-static var game_sense: GameScene3D
-
-# 状态枚举（必须前置声明，放在 current_state 变量之前）
 enum GameState {
-	TO_DEALING, # (过渡态)
-	DEALING, # 发牌状态
-	TO_SELECTING, # (过渡态)
-	SELECTING, # 选牌状态
-	TO_WAITING, # (过渡态)
-	WAITING, # 等待状态
-	TO_COMBOING, # (过渡态)
-	COMBOING # 连招状态
+	TO_DEALING,
+	DEALING,
+	TO_SELECTING,
+	SELECTING,
+	TO_WAITING,
+	WAITING,
+	TO_COMBOING,
+	COMBOING
 }
+
+static var match_state: MatchState = MatchState.new()
+static var scene_refs: SceneRefs = SceneRefs.new()
+
+static var selected_group: Array[Card_Base]:
+	get:
+		return match_state.selected_group
+	set(value):
+		match_state.selected_group = value
+
+static var discard_group: Array[Card_Base]:
+	get:
+		return match_state.discard_group
+	set(value):
+		match_state.discard_group = value
+
+static var players: Array[PlayerEntity]:
+	get:
+		return match_state.players
+	set(value):
+		match_state.players = value
+
+static var player_activity: PlayerEntity:
+	get:
+		return match_state.player_activity
+	set(value):
+		match_state.player_activity = value
+
+static var local_player: PlayerEntity:
+	get:
+		return match_state.local_player
+	set(value):
+		match_state.local_player = value
+
+static var current_play_turn: int:
+	get:
+		return match_state.current_play_turn
+	set(value):
+		match_state.current_play_turn = value
+
+static var round: int:
+	get:
+		return match_state.round
+	set(value):
+		match_state.round = value
+
+static var game_progress: int:
+	get:
+		return match_state.game_progress
+	set(value):
+		match_state.game_progress = value
+
+static var detailed_card: Card_Base:
+	get:
+		return match_state.detailed_card
+	set(value):
+		match_state.detailed_card = value
+
+static var current_state: int:
+	get:
+		return match_state.current_state
+	set(value):
+		match_state.current_state = value
+
+static var selected_card: Card_Base:
+	get:
+		return match_state.selected_card
+	set(value):
+		match_state.selected_card = value
+
+static var cards_number_label: Label3D:
+	get:
+		return scene_refs.cards_number_label
+	set(value):
+		scene_refs.cards_number_label = value
+
+static var showing_area_label: Label3D:
+	get:
+		return scene_refs.showing_area_label
+	set(value):
+		scene_refs.showing_area_label = value
+
+static var wait_area1_label: Label3D:
+	get:
+		return scene_refs.wait_area1_label
+	set(value):
+		scene_refs.wait_area1_label = value
+
+static var wait_area2_label: Label3D:
+	get:
+		return scene_refs.wait_area2_label
+	set(value):
+		scene_refs.wait_area2_label = value
+
+static var held_area1_label: Label3D:
+	get:
+		return scene_refs.held_area1_label
+	set(value):
+		scene_refs.held_area1_label = value
+
+static var held_area2_label: Label3D:
+	get:
+		return scene_refs.held_area2_label
+	set(value):
+		scene_refs.held_area2_label = value
+
+static var discard_pile: Sprite3D:
+	get:
+		return scene_refs.discard_pile
+	set(value):
+		scene_refs.discard_pile = value
+
+static var deck: Sprite3D:
+	get:
+		return scene_refs.deck
+	set(value):
+		scene_refs.deck = value
+
+static var camera: Camera3D:
+	get:
+		return scene_refs.camera
+	set(value):
+		scene_refs.camera = value
+
+static var local_hand_anchor: Node3D:
+	get:
+		return scene_refs.local_hand_anchor
+	set(value):
+		scene_refs.local_hand_anchor = value
+
+static var remote_hand_anchor: Node3D:
+	get:
+		return scene_refs.remote_hand_anchor
+	set(value):
+		scene_refs.remote_hand_anchor = value
+
+static var local_wait_anchor: Node3D:
+	get:
+		return scene_refs.local_wait_anchor
+	set(value):
+		scene_refs.local_wait_anchor = value
+
+static var local_held_anchor: Node3D:
+	get:
+		return scene_refs.local_held_anchor
+	set(value):
+		scene_refs.local_held_anchor = value
+
+static var remote_wait_anchor: Node3D:
+	get:
+		return scene_refs.remote_wait_anchor
+	set(value):
+		scene_refs.remote_wait_anchor = value
+
+static var remote_held_anchor: Node3D:
+	get:
+		return scene_refs.remote_held_anchor
+	set(value):
+		scene_refs.remote_held_anchor = value
+
+static var local_player_node: Node3D:
+	get:
+		return scene_refs.local_player_node
+	set(value):
+		scene_refs.local_player_node = value
+
+static var multi_player_node: Node3D:
+	get:
+		return scene_refs.multi_player_node
+	set(value):
+		scene_refs.multi_player_node = value
+
+static var cube_desk: MeshInstance3D:
+	get:
+		return scene_refs.cube_desk
+	set(value):
+		scene_refs.cube_desk = value
+
+static var camera_controller: CameraController:
+	get:
+		return scene_refs.camera_controller
+	set(value):
+		scene_refs.camera_controller = value
+
+static var cube_rot_animation: AnimationUtils:
+	get:
+		return scene_refs.cube_rot_animation
+	set(value):
+		scene_refs.cube_rot_animation = value
+
+static var game_sense: GameScene3D:
+	get:
+		return scene_refs.game_sense
+	set(value):
+		scene_refs.game_sense = value
+
+static var event_bus: EventBus:
+	get:
+		return scene_refs.event_bus
+	set(value):
+		scene_refs.event_bus = value
 
 static func reset_runtime_state(preserve_players: bool = false) -> void:
 	selected_group = []

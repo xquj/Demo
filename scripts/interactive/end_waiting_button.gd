@@ -9,16 +9,8 @@ func _input(event: InputEvent) -> void:
 		return
 	if not is_entered or global.current_state != global.GameState.WAITING:
 		return
-
-	var total_waiting_size: int = 0
-	for player in global.players:
-		total_waiting_size += player.waitingGroup.size()
-		if not player.can_combo:
-			total_waiting_size = -1
-			break
-
-	if total_waiting_size == 0 and global.cube_rot_animation.end_value != 90:
-		global.game_sense._switch_state(global.GameState.COMBOING)
+	if global.event_bus != null:
+		global.event_bus.end_waiting_requested.emit()
 
 func _on_area_3d_mouse_entered() -> void:
 	is_entered = true
